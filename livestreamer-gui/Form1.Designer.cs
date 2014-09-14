@@ -44,6 +44,8 @@
    this.tb_livestreamer_path = new System.Windows.Forms.TextBox();
    this.label8 = new System.Windows.Forms.Label();
    this.tabs = new System.Windows.Forms.TabControl();
+   this.btnSearchForLivestreamer = new System.Windows.Forms.Button();
+   this.cbxDontShowConsoleWindow = new System.Windows.Forms.CheckBox();
    this.tb_livestreamer.SuspendLayout();
    ((System.ComponentModel.ISupportInitialize)(this.num_livestreamer_attempts)).BeginInit();
    ((System.ComponentModel.ISupportInitialize)(this.num_livestreamer_delay)).BeginInit();
@@ -102,6 +104,8 @@
    // 
    // tb_livestreamer
    // 
+   this.tb_livestreamer.Controls.Add(this.cbxDontShowConsoleWindow);
+   this.tb_livestreamer.Controls.Add(this.btnSearchForLivestreamer);
    this.tb_livestreamer.Controls.Add(this.num_livestreamer_attempts);
    this.tb_livestreamer.Controls.Add(this.label11);
    this.tb_livestreamer.Controls.Add(this.label10);
@@ -210,7 +214,7 @@
    // 
    this.tb_livestreamer_path.Location = new System.Drawing.Point(81, 7);
    this.tb_livestreamer_path.Name = "tb_livestreamer_path";
-   this.tb_livestreamer_path.Size = new System.Drawing.Size(301, 20);
+   this.tb_livestreamer_path.Size = new System.Drawing.Size(252, 20);
    this.tb_livestreamer_path.TabIndex = 1;
    this.tb_livestreamer_path.Text = "livestreamer";
    // 
@@ -231,6 +235,28 @@
    this.tabs.SelectedIndex = 0;
    this.tabs.Size = new System.Drawing.Size(396, 390);
    this.tabs.TabIndex = 3;
+   // 
+   // btnSearchForLivestreamer
+   // 
+   this.btnSearchForLivestreamer.Location = new System.Drawing.Point(340, 7);
+   this.btnSearchForLivestreamer.Name = "btnSearchForLivestreamer";
+   this.btnSearchForLivestreamer.Size = new System.Drawing.Size(42, 20);
+   this.btnSearchForLivestreamer.TabIndex = 9;
+   this.btnSearchForLivestreamer.Text = "...";
+   this.btnSearchForLivestreamer.UseVisualStyleBackColor = true;
+   this.btnSearchForLivestreamer.Click += new System.EventHandler(this.btnSearchForLivestreamer_Click);
+   // 
+   // cbxDontShowConsoleWindow
+   // 
+   this.cbxDontShowConsoleWindow.AutoSize = true;
+   this.cbxDontShowConsoleWindow.Checked = true;
+   this.cbxDontShowConsoleWindow.CheckState = System.Windows.Forms.CheckState.Checked;
+   this.cbxDontShowConsoleWindow.Location = new System.Drawing.Point(4, 85);
+   this.cbxDontShowConsoleWindow.Name = "cbxDontShowConsoleWindow";
+   this.cbxDontShowConsoleWindow.Size = new System.Drawing.Size(158, 17);
+   this.cbxDontShowConsoleWindow.TabIndex = 10;
+   this.cbxDontShowConsoleWindow.Text = "Don\'t show console window";
+   this.cbxDontShowConsoleWindow.UseVisualStyleBackColor = true;
    // 
    // Form1
    // 
@@ -273,6 +299,8 @@
   private System.Windows.Forms.TextBox tb_livestreamer_path;
   private System.Windows.Forms.Label label8;
   private System.Windows.Forms.TabControl tabs;
+  private System.Windows.Forms.Button btnSearchForLivestreamer;
+  private System.Windows.Forms.CheckBox cbxDontShowConsoleWindow;
  }
 }
 

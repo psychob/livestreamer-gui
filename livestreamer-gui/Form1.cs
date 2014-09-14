@@ -107,6 +107,9 @@ namespace livestreamer_gui
 
    Process prc = new Process();
 
+   if ( cbxDontShowConsoleWindow.Checked ) 
+    prc.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
+
    prc.StartInfo.FileName = tb_livestreamer_path.Text;
    prc.StartInfo.Arguments = "--loglevel " + cb_livestreamer_loglevel.Text + " ";
    if (cbx_livestreamer_retry.Checked)
@@ -119,11 +122,34 @@ namespace livestreamer_gui
    prc.StartInfo.Arguments += tb_genUrl.Text + " " + cb_quality.Text;
 
    if (cb_quality.Text == "")
-    prc.StartInfo.Arguments += "best,high,medium,low,worst";
+   {
+    StringBuilder sb = new StringBuilder();
+    foreach (var it in cb_quality.Items)
+    {
+     sb.Append(it);
+     sb.Append(",");
+    }
+
+    prc.StartInfo.Arguments += sb.ToString().Trim(',');
+   } else
+    prc.StartInfo.Arguments += cb_quality.Text;
 
    prc.Start();
 
    tb_log.Text = prc.StartInfo.FileName + " " + prc.StartInfo.Arguments;
+  }
+
+  private void btnSearchForLivestreamer_Click(object sender, EventArgs e)
+  {
+   OpenFileDialog ofd = new OpenFileDialog();
+
+   ofd.CheckFileExists = true;
+   ofd.CheckPathExists = true;
+   ofd.Filter = "livestreamer.exe|livestreamer.exe";
+   ofd.FilterIndex = 0;
+   ofd.Title = "Search for livestreamer.exe file";
+   if ( ofd.ShowDialog() == System.Windows.Forms.DialogResult.OK )
+    tb_livestreamer_path.Text = ofd.FileName;
   }
  }
 }
