@@ -153,6 +153,13 @@ namespace livestreamer_gui
     tb_livestreamer_path.Text = ofd.FileName;
   }
 
+  private string getFileName( )
+  {
+   string tmp = Process.GetCurrentProcess().MainModule.FileName;
+
+   return System.IO.Path.GetFileNameWithoutExtension(tmp);
+  }
+
   private void Form1_Load(object sender, EventArgs e)
   {
    // loading config from file
@@ -160,7 +167,7 @@ namespace livestreamer_gui
    {
     XmlReaderSettings xrs = new XmlReaderSettings();
     xrs.IgnoreWhitespace = true;
-    XmlReader xr = XmlReader.Create("config.xml", xrs);
+    XmlReader xr = XmlReader.Create(getFileName() + ".xml", xrs);
     xr.ReadStartElement("gui");
 
     xr.ReadStartElement("livestreamer-path");
@@ -216,8 +223,7 @@ namespace livestreamer_gui
    xws.Indent = true;
    xws.IndentChars = " ";
    xws.Encoding = Encoding.UTF8;
-
-   XmlWriter xw = XmlWriter.Create("config.xml", xws);
+   XmlWriter xw = XmlWriter.Create(getFileName() + ".xml", xws);
 
    xw.WriteStartDocument(true);
    xw.WriteStartElement("gui");
