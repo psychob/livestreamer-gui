@@ -120,7 +120,7 @@ namespace livestreamer_gui
     if ( num_livestreamer_delay.Value > 0 )
      prc.StartInfo.Arguments += "--retry-streams " + num_livestreamer_delay.Value.ToString() + " ";
    }
-   prc.StartInfo.Arguments += tb_genUrl.Text + " " + cb_quality.Text;
+   prc.StartInfo.Arguments += tb_genUrl.Text + " ";
 
    if (cb_quality.Text == "")
    {
