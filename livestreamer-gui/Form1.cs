@@ -180,13 +180,15 @@ namespace livestreamer_gui
     xr.Skip();
     xr.ReadEndElement();
 
-    xr.ReadStartElement("retry");
+    // because of .NET "logic", our attribute is here, BEFORE we tell to
+    // advance to next node.
     xr.MoveToFirstAttribute();
-    if (xr.Value == "true")
+    if (xr.Value == xr.GetAttribute("enabled"))
      cbx_livestreamer_retry.Checked = true;
     else
      cbx_livestreamer_retry.Checked = false;
-    xr.MoveToContent();
+
+    xr.ReadStartElement("retry");
 
     xr.ReadStartElement("attempts");
     num_livestreamer_attempts.Value = int.Parse(xr.Value);
