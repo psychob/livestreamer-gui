@@ -27,6 +27,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Xml;
 
 namespace livestreamer_gui
 {
@@ -150,6 +151,59 @@ namespace livestreamer_gui
    ofd.Title = "Search for livestreamer.exe file";
    if ( ofd.ShowDialog() == System.Windows.Forms.DialogResult.OK )
     tb_livestreamer_path.Text = ofd.FileName;
+  }
+
+  private void Form1_Load(object sender, EventArgs e)
+  {
+   // loading config from file
+  }
+
+  private void Form1_FormClosed(object sender, FormClosedEventArgs e)
+  {
+   // saving config file
+   XmlWriterSettings xws = new XmlWriterSettings();
+   xws.Indent = true;
+   xws.IndentChars = " ";
+   xws.Encoding = Encoding.UTF8;
+
+   XmlWriter xw = XmlWriter.Create("config.xml", xws);
+
+   xw.WriteStartDocument(true);
+   xw.WriteStartElement("gui");
+   
+   // path
+   xw.WriteStartElement("livestreamer-path");
+   xw.WriteString(tb_livestreamer_path.Text);
+   xw.WriteEndElement();
+
+   // log level
+   xw.WriteStartElement("log-level");
+   xw.WriteString(cb_livestreamer_loglevel.Text);
+   xw.WriteEndElement();
+
+   // retry
+   xw.WriteStartElement("retry");
+   xw.WriteAttributeString("enabled", cbx_livestreamer_retry.Checked ? "true" : "false");
+
+   xw.WriteStartElement("attempts");
+   xw.WriteString(num_livestreamer_attempts.Value.ToString());
+   xw.WriteEndElement();
+
+   xw.WriteStartElement("delay");
+   xw.WriteString(num_livestreamer_delay.Value.ToString());
+   xw.WriteEndElement();
+
+   xw.WriteEndElement();
+
+   // hide console
+   xw.WriteStartElement("hide-console");
+   xw.WriteString(cbxDontShowConsoleWindow.Checked ? "true" : "false");
+   xw.WriteEndElement();
+
+   xw.WriteEndDocument();
+
+   // retarded xml...
+   xw.Close();
   }
  }
 }

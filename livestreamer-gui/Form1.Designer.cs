@@ -273,6 +273,8 @@
    this.MaximizeBox = false;
    this.Name = "Form1";
    this.Text = "livestreamer-gui";
+   this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.Form1_FormClosed);
+   this.Load += new System.EventHandler(this.Form1_Load);
    this.tb_livestreamer.ResumeLayout(false);
    this.tb_livestreamer.PerformLayout();
    ((System.ComponentModel.ISupportInitialize)(this.num_livestreamer_attempts)).EndInit();
