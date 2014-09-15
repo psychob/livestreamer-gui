@@ -34,6 +34,8 @@
    this.cb_quality = new System.Windows.Forms.ComboBox();
    this.tb_log = new System.Windows.Forms.TextBox();
    this.tb_livestreamer = new System.Windows.Forms.TabPage();
+   this.cbxDontShowConsoleWindow = new System.Windows.Forms.CheckBox();
+   this.btnSearchForLivestreamer = new System.Windows.Forms.Button();
    this.num_livestreamer_attempts = new System.Windows.Forms.NumericUpDown();
    this.label11 = new System.Windows.Forms.Label();
    this.label10 = new System.Windows.Forms.Label();
@@ -44,8 +46,6 @@
    this.tb_livestreamer_path = new System.Windows.Forms.TextBox();
    this.label8 = new System.Windows.Forms.Label();
    this.tabs = new System.Windows.Forms.TabControl();
-   this.btnSearchForLivestreamer = new System.Windows.Forms.Button();
-   this.cbxDontShowConsoleWindow = new System.Windows.Forms.CheckBox();
    this.tb_livestreamer.SuspendLayout();
    ((System.ComponentModel.ISupportInitialize)(this.num_livestreamer_attempts)).BeginInit();
    ((System.ComponentModel.ISupportInitialize)(this.num_livestreamer_delay)).BeginInit();
@@ -123,6 +123,28 @@
    this.tb_livestreamer.Text = "Livestreamer";
    this.tb_livestreamer.UseVisualStyleBackColor = true;
    // 
+   // cbxDontShowConsoleWindow
+   // 
+   this.cbxDontShowConsoleWindow.AutoSize = true;
+   this.cbxDontShowConsoleWindow.Checked = true;
+   this.cbxDontShowConsoleWindow.CheckState = System.Windows.Forms.CheckState.Checked;
+   this.cbxDontShowConsoleWindow.Location = new System.Drawing.Point(6, 84);
+   this.cbxDontShowConsoleWindow.Name = "cbxDontShowConsoleWindow";
+   this.cbxDontShowConsoleWindow.Size = new System.Drawing.Size(158, 17);
+   this.cbxDontShowConsoleWindow.TabIndex = 10;
+   this.cbxDontShowConsoleWindow.Text = "Don\'t show console window";
+   this.cbxDontShowConsoleWindow.UseVisualStyleBackColor = true;
+   // 
+   // btnSearchForLivestreamer
+   // 
+   this.btnSearchForLivestreamer.Location = new System.Drawing.Point(340, 7);
+   this.btnSearchForLivestreamer.Name = "btnSearchForLivestreamer";
+   this.btnSearchForLivestreamer.Size = new System.Drawing.Size(42, 20);
+   this.btnSearchForLivestreamer.TabIndex = 9;
+   this.btnSearchForLivestreamer.Text = "...";
+   this.btnSearchForLivestreamer.UseVisualStyleBackColor = true;
+   this.btnSearchForLivestreamer.Click += new System.EventHandler(this.btnSearchForLivestreamer_Click);
+   // 
    // num_livestreamer_attempts
    // 
    this.num_livestreamer_attempts.Location = new System.Drawing.Point(273, 60);
@@ -143,7 +165,7 @@
    // label11
    // 
    this.label11.AutoSize = true;
-   this.label11.Location = new System.Drawing.Point(216, 62);
+   this.label11.Location = new System.Drawing.Point(216, 65);
    this.label11.Name = "label11";
    this.label11.Size = new System.Drawing.Size(51, 13);
    this.label11.TabIndex = 7;
@@ -236,28 +258,6 @@
    this.tabs.Size = new System.Drawing.Size(396, 390);
    this.tabs.TabIndex = 3;
    // 
-   // btnSearchForLivestreamer
-   // 
-   this.btnSearchForLivestreamer.Location = new System.Drawing.Point(340, 7);
-   this.btnSearchForLivestreamer.Name = "btnSearchForLivestreamer";
-   this.btnSearchForLivestreamer.Size = new System.Drawing.Size(42, 20);
-   this.btnSearchForLivestreamer.TabIndex = 9;
-   this.btnSearchForLivestreamer.Text = "...";
-   this.btnSearchForLivestreamer.UseVisualStyleBackColor = true;
-   this.btnSearchForLivestreamer.Click += new System.EventHandler(this.btnSearchForLivestreamer_Click);
-   // 
-   // cbxDontShowConsoleWindow
-   // 
-   this.cbxDontShowConsoleWindow.AutoSize = true;
-   this.cbxDontShowConsoleWindow.Checked = true;
-   this.cbxDontShowConsoleWindow.CheckState = System.Windows.Forms.CheckState.Checked;
-   this.cbxDontShowConsoleWindow.Location = new System.Drawing.Point(4, 85);
-   this.cbxDontShowConsoleWindow.Name = "cbxDontShowConsoleWindow";
-   this.cbxDontShowConsoleWindow.Size = new System.Drawing.Size(158, 17);
-   this.cbxDontShowConsoleWindow.TabIndex = 10;
-   this.cbxDontShowConsoleWindow.Text = "Don\'t show console window";
-   this.cbxDontShowConsoleWindow.UseVisualStyleBackColor = true;
-   // 
    // Form1
    // 
    this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -269,6 +269,8 @@
    this.Controls.Add(this.button1);
    this.Controls.Add(this.tb_genUrl);
    this.Controls.Add(this.tb_userUrl);
+   this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
+   this.MaximizeBox = false;
    this.Name = "Form1";
    this.Text = "livestreamer-gui";
    this.tb_livestreamer.ResumeLayout(false);
