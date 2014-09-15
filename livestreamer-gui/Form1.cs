@@ -156,6 +156,57 @@ namespace livestreamer_gui
   private void Form1_Load(object sender, EventArgs e)
   {
    // loading config from file
+   try
+   {
+    XmlReaderSettings xrs = new XmlReaderSettings();
+    xrs.IgnoreWhitespace = true;
+    XmlReader xr = XmlReader.Create("config.xml", xrs);
+    xr.ReadStartElement("gui");
+
+    xr.ReadStartElement("livestreamer-path");
+    tb_livestreamer_path.Text = xr.Value;
+    xr.Skip();
+    xr.ReadEndElement();
+
+    xr.ReadStartElement("log-level");
+    cb_livestreamer_loglevel.Text = xr.Value;
+    xr.Skip();
+    xr.ReadEndElement();
+
+    xr.ReadStartElement("retry");
+    xr.MoveToFirstAttribute();
+    if (xr.Value == "true")
+     cbx_livestreamer_retry.Checked = true;
+    else
+     cbx_livestreamer_retry.Checked = false;
+    xr.MoveToContent();
+
+    xr.ReadStartElement("attempts");
+    num_livestreamer_attempts.Value = int.Parse(xr.Value);
+    xr.Skip();
+    xr.ReadEndElement();
+
+    xr.ReadStartElement("delay");
+    num_livestreamer_delay.Value = int.Parse(xr.Value);
+    xr.Skip();
+    xr.ReadEndElement();
+
+    xr.ReadEndElement();
+
+    xr.ReadStartElement("hide-console");
+    if (xr.Value == "true")
+     cbxDontShowConsoleWindow.Checked = true;
+    else
+     cbxDontShowConsoleWindow.Checked = false;
+    xr.Skip();
+    xr.ReadEndElement();
+
+    xr.ReadEndElement();
+    xr.Close();
+   } catch ( Exception )
+   {
+    // catch'em all!
+   }
   }
 
   private void Form1_FormClosed(object sender, FormClosedEventArgs e)
