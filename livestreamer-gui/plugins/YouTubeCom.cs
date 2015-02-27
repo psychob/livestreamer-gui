@@ -17,44 +17,47 @@
 // 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 //
 
-using System;
-using System.Windows.Forms;
 using System.Web;
+using System.Windows.Forms;
 
-namespace livestreamer_gui
+namespace livestreamer_gui.plugins
 {
- class YouTube : IWebsite
+ class YouTubeCom : WebsiteAPI
  {
-  public bool Is(Uri url)
+  public bool isMyUri(System.Uri url)
   {
    if ( url.Host == "youtube.com" || url.Host == "www.youtube.com" )
    {
     var urlq = HttpUtility.ParseQueryString(url.Query);
-
     layout_boxVideo.Text = urlq["v"];
-
+    return true;
+   } else if ( url.Host == "youtu.be" )
+   {
+    layout_boxVideo.Text = url.Segments[1];
     return true;
    }
 
    return false;
   }
 
-  public string getName()
+  public string getStreamTitle()
   {
-   return layout_boxVideo.Text;
+   return "!not supported";
   }
 
-  public string getUrl()
+  public string getStreamAuthor()
   {
-   if (getName() == "")
-    return "";
-   return "http://youtube.com/watch?v=" + getName();
+   return "!not supported!";
+  }
+
+  public string getCanonicalUrl()
+  {
+   return "http://www.youtube.com/watch?v=" + layout_boxVideo.Text;
   }
 
   public string[] getQuality()
   {
-   var l = new System.Collections.Generic.List<string>()
-   {
+   return new string[]{
     "best",
     "1080p",
     "720p",
@@ -63,24 +66,24 @@ namespace livestreamer_gui
     "260p",
     "worst"
    };
-
-   return l.ToArray();
   }
 
-  public string getAuthor()
+  public string getPluginId()
   {
-   throw new NotImplementedException();
+   return "stock::youtube";
   }
+
+  MainFormInfo local_mfi;
 
   TabPage layout_tab;
 
   Label layout_labelVideo;
   TextBox layout_boxVideo;
 
-  UpdateCallBack ucbf;
-
-  public void setUpClass(TabControl tb, UpdateCallBack ucb )
+  public void setUpTab(MainFormInfo mfi)
   {
+   local_mfi = mfi;
+
    layout_tab = new TabPage("youtube.com");
 
    layout_labelVideo = new Label();
@@ -97,19 +100,16 @@ namespace livestreamer_gui
    layout_tab.Controls.Add(layout_labelVideo);
    layout_tab.Controls.Add(layout_boxVideo);
 
-   tb.TabPages.Add(layout_tab);
-
-   ucbf = ucb;
+   mfi.tabControl.TabPages.Add(layout_tab);
   }
 
-  private void eventChanger(object sender, EventArgs e)
+  private void eventChanger(object sender, System.EventArgs e)
   {
-   ucbf(id());
+   local_mfi.generateUpdateEvent(getPluginId());
   }
 
-  public string id()
-  {
-   return "youtube";
+  public void queryAdditionalData()
+  { // nic
   }
  }
 }

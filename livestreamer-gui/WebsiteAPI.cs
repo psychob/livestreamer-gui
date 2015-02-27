@@ -17,32 +17,35 @@
 // 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 //
 
-using System;
-using System.Windows.Forms;
-
 namespace livestreamer_gui
 {
- public delegate void UpdateCallBack( string id );
-
- interface IWebsite
+ struct MainFormInfo
  {
-  // czy ta klasa odpowiada za taki url
-  bool Is(Uri url);
+  // typy
+  public delegate void GenerateRunEventType();
+  public delegate string GetLivestreamerPathType();
+  public delegate void GenerateUpdateEventType(string id);
 
-  // pobranie Nazwy Streamu
-  string getName();
+  // pola
+  public System.Windows.Forms.TabControl tabControl;
+  public GenerateRunEventType generateRunEvent;
+  public GetLivestreamerPathType getLivestreamerPath;
+  public GenerateUpdateEventType generateUpdateEvent;
+ }
 
-  // pobieranie Adresu Stremu
-  string getUrl();
+ interface WebsiteAPI
+ {
+  bool isMyUri(System.Uri url);
 
-  // pobieranie jakości
+  string getStreamTitle();
+  string getStreamAuthor();
+  string getCanonicalUrl();
+  void queryAdditionalData();
+
   string[] getQuality();
 
-  // pobranie autora
-  string getAuthor();
+  string getPluginId();
 
-  void setUpClass(TabControl tb, UpdateCallBack ucb );
-
-  string id();
+  void setUpTab(MainFormInfo mfi);
  }
 }

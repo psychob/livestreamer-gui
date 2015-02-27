@@ -18,13 +18,11 @@
 //
 
 using System.Windows.Forms;
-using System.Collections.Generic;
-
-namespace livestreamer_gui
+namespace livestreamer_gui.plugins
 {
- class Twitch : IWebsite
+ class TwitchTv : WebsiteAPI
  {
-  public bool Is(System.Uri url)
+  public bool isMyUri(System.Uri url)
   {
    if ( url.Host == "www.twitch.tv" || url.Host == "twitch.tv" )
    {
@@ -32,21 +30,17 @@ namespace livestreamer_gui
      return false;
 
     layout_boxChannel.Text = url.Segments[1].Trim('/').Trim();
+    layout_checkhightligh.Checked = false;
+    layout_boxVOD.Text = "";
+    layout_numHour.Value = 0;
+    layout_numMinute.Value = 0;
+    layout_numSecond.Value = 0;
 
     if (url.Segments.Length != 4)
-    {
-     layout_checkhightligh.Checked = false;
-     layout_boxVOD.Text = "";
-     layout_numHour.Value = 0;
-     layout_numMinute.Value = 0;
-     layout_numSecond.Value = 0;
      return true;
-    }
 
-    if ( url.Segments[2].Trim('/').Trim() == "c" )
-    {
+    if (url.Segments[2].Trim('/').Trim() == "c")
      layout_checkhightligh.Checked = true;
-    }
 
     layout_boxVOD.Text = url.Segments[3].Trim('/').Trim();
 
@@ -56,20 +50,25 @@ namespace livestreamer_gui
    return false;
   }
 
-  public string getName()
+  public string getStreamTitle()
   {
-   return layout_boxChannel.Text.Trim();
+   return layout_boxChannel.Text;
   }
 
-  public string getUrl()
+  public string getStreamAuthor()
   {
-   if ( layout_boxVOD.Text == "" )
-    return "http://www.twitch.tv/" + getName();
+   return layout_boxChannel.Text;
+  }
+
+  public string getCanonicalUrl()
+  {
+   if (layout_boxVOD.Text == "")
+    return "http://www.twitch.tv/" + layout_boxChannel.Text;
    else
    {
     string append = "";
 
-    if ( layout_numHour.Value > 0 || layout_numMinute.Value > 0 || layout_numSecond.Value > 0 )
+    if (layout_numHour.Value > 0 || layout_numMinute.Value > 0 || layout_numSecond.Value > 0)
     {
      append = "?t=";
      if (layout_numHour.Value > 0)
@@ -81,32 +80,32 @@ namespace livestreamer_gui
     }
 
     if (layout_checkhightligh.Checked)
-     return "http://www.twitch.tv/" + getName() + "/c/" + layout_boxVOD.Text + append;
+     return "http://www.twitch.tv/" + layout_boxChannel.Text + "/c/" + layout_boxVOD.Text + append;
     else
-     return "http://www.twitch.tv/" + getName() + "/b/" + layout_boxVOD.Text + append;
+     return "http://www.twitch.tv/" + layout_boxChannel.Text + "/b/" + layout_boxVOD.Text + append;
    }
   }
 
   public string[] getQuality()
   {
-   var f = new List<string>()
-   {
+   return new string[]{
     "best",
     "high",
     "medium",
     "low",
     "worst"
    };
-   return f.ToArray();
   }
 
-  public string getAuthor()
+  public string getPluginId()
   {
-   return getName();
+   return "stock::twitchtv";
   }
+
+  MainFormInfo local_mfi;
 
   TabPage layout_mtp;
-  Label   layout_labelChannel,
+  Label layout_labelChannel,
           layout_labelVOD,
           layout_labelTime,
           layout_labelIsHighlight,
@@ -120,10 +119,10 @@ namespace livestreamer_gui
                 layout_numSecond;
   CheckBox layout_checkhightligh;
 
-  private UpdateCallBack ucbf;
-
-  public void setUpClass(System.Windows.Forms.TabControl tb, UpdateCallBack ucb)
+  public void setUpTab(MainFormInfo mfi)
   {
+   local_mfi = mfi;
+
    // tworzenie
    layout_mtp = new TabPage("twitch.tv");
    layout_labelChannel = new Label();
@@ -199,34 +198,25 @@ namespace livestreamer_gui
    layout_checkhightligh.CheckedChanged += evenChanger;
 
    // dodawanie do komponentów
-   layout_mtp.Controls.Add(layout_labelChannel);
-   layout_mtp.Controls.Add(layout_boxChannel);
-   layout_mtp.Controls.Add(layout_labelVOD);
-   layout_mtp.Controls.Add(layout_boxVOD);
-   layout_mtp.Controls.Add(layout_labelTime);
-   layout_mtp.Controls.Add(layout_labelIsHighlight);
-   layout_mtp.Controls.Add(layout_numHour);
-   layout_mtp.Controls.Add(layout_numMinute);
-   layout_mtp.Controls.Add(layout_numSecond);
-   layout_mtp.Controls.Add(layout_labelh);
-   layout_mtp.Controls.Add(layout_labelm);
-   layout_mtp.Controls.Add(layout_labels);
-   layout_mtp.Controls.Add(layout_checkhightligh);
+   layout_mtp.Controls.AddRange(
+    new Control[]{layout_labelChannel, layout_boxChannel, layout_labelVOD,
+                  layout_boxVOD, layout_labelTime, layout_labelIsHighlight,
+                  layout_numHour, layout_numMinute, layout_numSecond,
+                  layout_labelh, layout_labelm, layout_labels,
+                  layout_checkhightligh}
+   );
 
    // dodwanie taba
-   tb.TabPages.Add(layout_mtp);
-
-   ucbf = ucb;
+   mfi.tabControl.TabPages.Add(layout_mtp);
   }
 
   private void evenChanger(object sender, System.EventArgs e)
   {
-   ucbf(id());
+   local_mfi.generateUpdateEvent(getPluginId());
   }
 
-  public string id()
+  public void queryAdditionalData()
   {
-   return "twitch";
   }
  }
 }
