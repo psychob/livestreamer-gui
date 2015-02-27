@@ -79,20 +79,18 @@ namespace livestreamer_gui
   private void updateUrl()
   {
    // sprawdzamy która klasa jest aktualnie wybrana
-   foreach (WebsiteAPI it in webApi)
+   WebsiteAPI it = getCurrentWebsite();
+
+   if ( it == null )
    {
-    if ( it.getPluginId() == currentWebApi )
-    {
-     tbOutputUrl.Text = it.getCanonicalUrl();
-
-     cbQuality.Items.Clear();
-     cbQuality.Items.AddRange(it.getQuality());
-
-     return;
-    }
+    tbOutputUrl.Text = "";
+    return;
    }
 
-   tbOutputUrl.Text = "";
+   tbOutputUrl.Text = it.getCanonicalUrl();
+
+   cbQuality.Items.Clear();
+   cbQuality.Items.AddRange(it.getQuality());
   }
 
   private void runUrl()
@@ -120,6 +118,8 @@ namespace livestreamer_gui
 
    if ( cbGenerateMetadataForVLC.Checked )
    {
+    currentWebsite.queryAdditionalData();
+
     string append = "";
 
     append += "--meta-title=\"" + currentWebsite.getStreamTitle() + "\" ";

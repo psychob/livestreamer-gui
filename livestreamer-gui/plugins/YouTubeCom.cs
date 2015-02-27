@@ -17,6 +17,9 @@
 // 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 //
 
+using System;
+using System.IO;
+using System.Net;
 using System.Web;
 using System.Windows.Forms;
 
@@ -42,12 +45,12 @@ namespace livestreamer_gui.plugins
 
   public string getStreamTitle()
   {
-   return "!not supported";
+   return video_name;
   }
 
   public string getStreamAuthor()
   {
-   return "!not supported!";
+   return artist_name;
   }
 
   public string getCanonicalUrl()
@@ -108,8 +111,33 @@ namespace livestreamer_gui.plugins
    local_mfi.generateUpdateEvent(getPluginId());
   }
 
+  string artist_name = "unknown";
+  string video_name = "unknown";
+
   public void queryAdditionalData()
-  { // nic
+  {
+   // pobieramy informacje o video
+   string yt_url = getCanonicalUrl();
+   string oembed = "http://www.youtube.com/oembed";
+
+   {
+    var qstr = HttpUtility.ParseQueryString(string.Empty);
+    qstr["url"] = getCanonicalUrl();
+    qstr["format"] = "xml";
+
+    oembed += "?" + qstr.ToString();
+   }
+
+   WebRequest wr = WebRequest.Create(oembed);
+   WebResponse wre = wr.GetResponse();
+   Stream data = wre.GetResponseStream();
+
+   System.Xml.XmlDocument xmldoc = new System.Xml.XmlDocument();
+   xmldoc.Load(data);
+   data.Close();
+
+   artist_name = xmldoc.GetElementsByTagName("author_name")[0].InnerText;
+   video_name = xmldoc.GetElementsByTagName("title")[0].InnerText;
   }
  }
 }
