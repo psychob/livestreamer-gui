@@ -247,7 +247,7 @@ namespace livestreamer_gui.plugins
    var dict = jss.Deserialize<Dictionary<string, object>>(html);
 
    stream_author = (string)dict["display_name"];
-   stream_title = "Playing: " + (string)dict["game"] + " " + (string)dict["status"];
+   stream_title = "Playing: " + (string)dict["game"] + " - " + (string)dict["status"];
   }
  }
 }
