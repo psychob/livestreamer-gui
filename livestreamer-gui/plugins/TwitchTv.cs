@@ -16,8 +16,13 @@
 // with this program; if not, write to the Free Software Foundation, Inc.,
 // 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 //
-
+using System.IO;
+using System.Net;
 using System.Windows.Forms;
+using System.Web;
+using System.Web.Script.Serialization;
+using System.Collections.Generic;
+
 namespace livestreamer_gui.plugins
 {
  class TwitchTv : WebsiteAPI
@@ -52,18 +57,23 @@ namespace livestreamer_gui.plugins
 
   public string getStreamTitle()
   {
-   return layout_boxChannel.Text;
+   return stream_title == "" ? getName() : stream_title;
   }
 
   public string getStreamAuthor()
   {
-   return layout_boxChannel.Text;
+   return stream_author == "" ? getName() : stream_author;
+  }
+
+  string getName( )
+  {
+   return layout_boxChannel.Text.Trim();
   }
 
   public string getCanonicalUrl()
   {
    if (layout_boxVOD.Text == "")
-    return "http://www.twitch.tv/" + layout_boxChannel.Text;
+    return "http://www.twitch.tv/" + getName();
    else
    {
     string append = "";
@@ -80,9 +90,9 @@ namespace livestreamer_gui.plugins
     }
 
     if (layout_checkhightligh.Checked)
-     return "http://www.twitch.tv/" + layout_boxChannel.Text + "/c/" + layout_boxVOD.Text + append;
+     return "http://www.twitch.tv/" + getName() + "/c/" + layout_boxVOD.Text + append;
     else
-     return "http://www.twitch.tv/" + layout_boxChannel.Text + "/b/" + layout_boxVOD.Text + append;
+     return "http://www.twitch.tv/" + getName() + "/b/" + layout_boxVOD.Text + append;
    }
   }
 
@@ -215,8 +225,29 @@ namespace livestreamer_gui.plugins
    local_mfi.generateUpdateEvent(getPluginId());
   }
 
+  string stream_title = "";
+  string stream_author = "";
+
   public void queryAdditionalData()
   {
+   string apiSite = "https://api.twitch.tv/kraken/channels/" + getName();
+
+   WebRequest wr = WebRequest.Create(apiSite);
+   WebResponse wre = wr.GetResponse();
+   Stream data = wre.GetResponseStream();
+
+   string html = string.Empty;
+   using ( StreamReader sr = new StreamReader(data))
+   {
+    html = sr.ReadToEnd();
+   }
+   data.Close();
+
+   JavaScriptSerializer jss = new JavaScriptSerializer();
+   var dict = jss.Deserialize<Dictionary<string, object>>(html);
+
+   stream_author = (string)dict["display_name"];
+   stream_title = "Playing: " + (string)dict["game"] + " " + (string)dict["status"];
   }
  }
 }
