@@ -11,10 +11,13 @@ Grab this [link](https://dl.dropboxusercontent.com/u/35418266/dev/livestreamer-g
 it requires .NET 4.5. Also it is not bundled with livestreamer!
 
 ## Changelog
+### 1.4.1
+* Fixed autocomplete to include all urls from current session
 ### 1.4
 * Added autocomplete feature
 
 ## Old Versions:
+* [1.4.1](https://dl.dropboxusercontent.com/u/35418266/dev/livestreamer-gui/livestreamer-gui-1.4.1.exe)
 * [1.4](https://dl.dropboxusercontent.com/u/35418266/dev/livestreamer-gui/livestreamer-gui-1.4.exe)
 * [1.3](https://dl.dropboxusercontent.com/u/35418266/dev/livestreamer-gui/livestreamer-gui-1.3.exe)
 * [1.2](https://dl.dropboxusercontent.com/u/35418266/dev/livestreamer-gui/livestreamer-gui-1.2.exe)

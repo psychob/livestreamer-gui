@@ -45,7 +45,7 @@ namespace livestreamer_gui
     if ( usedUrls != null )
     {
      string[] ret = usedUrls.OrderBy(uu => uu.count).Select(uu => uu.url).ToArray();
-     tbInput.AutoCompleteCustomSource.AddRange(ret.ToArray());
+     tbInput.AutoCompleteCustomSource.AddRange(ret);
     }
 
     xreader.Close();
@@ -169,6 +169,9 @@ namespace livestreamer_gui
     usedUrls = new UsedUrls[1];
     usedUrls[0].count = 1;
     usedUrls[0].url = p;
+
+    tbInput.AutoCompleteCustomSource = new AutoCompleteStringCollection();
+    tbInput.AutoCompleteCustomSource.Add(p);
    } else
    {
     // wyszukujemy url
@@ -184,6 +187,8 @@ namespace livestreamer_gui
     var tmp = usedUrls.ToList();
     tmp.Add(new UsedUrls(p));
     usedUrls = tmp.ToArray();
+
+    tbInput.AutoCompleteCustomSource.Add(p);
    }
   }
 
