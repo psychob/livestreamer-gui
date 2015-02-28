@@ -21,6 +21,7 @@ namespace livestreamer_gui
 
   WebsiteAPI[] webApi;
   string currentWebApi;
+  UsedUrls[] usedUrls;
 
   private void MainWindow_Load(object sender, EventArgs e)
   {
@@ -39,6 +40,13 @@ namespace livestreamer_gui
     nupDelay.Value = cfgClass.retryDelay;
     cbDontShowConsoleWindow.Checked = cfgClass.dontShowConsole;
     cbGenerateMetadataForVLC.Checked = cfgClass.generateVlcMetadata;
+    usedUrls = cfgClass.usedUrls;
+
+    if ( usedUrls != null )
+    {
+     string[] ret = usedUrls.OrderBy(uu => uu.count).Select(uu => uu.url).ToArray();
+     tbInput.AutoCompleteCustomSource.AddRange(ret.ToArray());
+    }
 
     xreader.Close();
    } catch (Exception)
@@ -149,6 +157,34 @@ namespace livestreamer_gui
    prc.Start();
 
    tbOutput.Text = prc.StartInfo.FileName + " " + prc.StartInfo.Arguments;
+
+   // dodaj do usedUrls
+   addToUsedUrls(tbOutputUrl.Text);
+  }
+
+  private void addToUsedUrls(string p)
+  {
+   if (usedUrls == null)
+   {
+    usedUrls = new UsedUrls[1];
+    usedUrls[0].count = 1;
+    usedUrls[0].url = p;
+   } else
+   {
+    // wyszukujemy url
+    for (int it = 0; it < usedUrls.Length; it++)
+    {
+     if (usedUrls[it].url == p)
+     {
+      usedUrls[it].count++;
+      return;
+     }
+    }
+
+    var tmp = usedUrls.ToList();
+    tmp.Add(new UsedUrls(p));
+    usedUrls = tmp.ToArray();
+   }
   }
 
   private string escapeString(string append)
@@ -231,7 +267,7 @@ namespace livestreamer_gui
    cfgClass.retryDelay = Decimal.ToInt32(nupDelay.Value);
    cfgClass.dontShowConsole = cbDontShowConsoleWindow.Checked;
    cfgClass.generateVlcMetadata = cbGenerateMetadataForVLC.Checked;
-   cfgClass.usedUrls = null;
+   cfgClass.usedUrls = usedUrls;
 
    System.Xml.Serialization.XmlSerializer xmlSerialiser = new System.Xml.Serialization.XmlSerializer(cfgClass.GetType());
 

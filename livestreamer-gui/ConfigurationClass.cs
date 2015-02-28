@@ -1,5 +1,17 @@
 ﻿namespace livestreamer_gui
 {
+ public struct UsedUrls
+ {
+  public string url;
+  public uint count;
+
+  public UsedUrls( string p )
+  {
+   url = p;
+   count = 1;
+  }
+ }
+
  public class ConfigurationClass
  {
   public string livestreamerPath;
@@ -9,6 +21,6 @@
   public int retryDelay;
   public bool dontShowConsole;
   public bool generateVlcMetadata;
-  public string[] usedUrls;
+  public UsedUrls[] usedUrls;
  }
 }
