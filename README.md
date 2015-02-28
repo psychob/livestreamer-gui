@@ -13,6 +13,7 @@ it requires .NET 4.5. Also it is not bundled with livestreamer!
 ## Changelog
 ### 1.4.1
 * Fixed autocomplete to include all urls from current session
+
 ### 1.4
 * Added autocomplete feature
 
