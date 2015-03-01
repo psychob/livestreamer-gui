@@ -105,6 +105,8 @@ namespace livestreamer_gui
   {
    if (tbOutputUrl.Text == "")
     return;
+   if (tbLivestreamerPath.Text == "")
+    return;
 
    Process prc = new Process();
    WebsiteAPI currentWebsite = getCurrentWebsite();

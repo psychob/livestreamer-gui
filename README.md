@@ -15,6 +15,7 @@ it requires .NET 4.5. Also it is not bundled with livestreamer!
 * Added ability to inspect autocomplete items
 * Now you don't need to choose log level to run livestreamer
 * Added escaping characters from VLC metadata
+* You can't run livestreamer if you didn't set up path for program
 
 ### 1.4.1
 * Fixed autocomplete to include all urls from current session
