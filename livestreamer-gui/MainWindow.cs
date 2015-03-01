@@ -113,7 +113,8 @@ namespace livestreamer_gui
     prc.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
 
    prc.StartInfo.FileName = tbLivestreamerPath.Text;
-   prc.StartInfo.Arguments = "--loglevel " + cbLogLevel.Text + " ";
+   if ( cbLogLevel.SelectedIndex != -1 )
+    prc.StartInfo.Arguments = "--loglevel " + cbLogLevel.Text + " ";
 
    if ( cbTryRetry.Checked )
    {
