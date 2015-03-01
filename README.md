@@ -1,5 +1,5 @@
 ﻿# livestreamer-gui
-(c) 2014 Andrzej Budzanowski
+(c) 2014 - 2015 Andrzej Budzanowski
 
 Simple GUI made for [livestreamer](http://livestreamer.readthedocs.org/en/latest/) written in C#.
 
@@ -11,6 +11,11 @@ Grab this [link](https://dl.dropboxusercontent.com/u/35418266/dev/livestreamer-g
 it requires .NET 4.5. Also it is not bundled with livestreamer!
 
 ## Changelog
+### 1.5
+* Added ability to inspect autocomplete items
+* Now you don't need to choose log level to run livestreamer
+* Added escaping characters from VLC metadata
+
 ### 1.4.1
 * Fixed autocomplete to include all urls from current session
 

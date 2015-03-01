@@ -131,9 +131,9 @@ namespace livestreamer_gui
 
     string append = "";
 
-    append += "--meta-title=\"" + currentWebsite.getStreamTitle() + "\" ";
-    append += "--meta-author=\"" + currentWebsite.getStreamAuthor() + "\" ";
-    append += "--meta-artist=\"" + currentWebsite.getStreamAuthor() + "\" ";
+    append += "--meta-title=\"" + removeBadCharacters(currentWebsite.getStreamTitle()) + "\" ";
+    append += "--meta-author=\"" + removeBadCharacters(currentWebsite.getStreamAuthor()) + "\" ";
+    append += "--meta-artist=\"" + removeBadCharacters(currentWebsite.getStreamAuthor()) + "\" ";
 
     append += "{filename}";
 
@@ -161,6 +161,13 @@ namespace livestreamer_gui
 
    // dodaj do usedUrls
    addToUsedUrls(tbOutputUrl.Text);
+  }
+
+  private string removeBadCharacters(string append)
+  {
+   append = append.Replace(@"\", @"");
+   append = append.Replace("\"", "");
+   return append;
   }
 
   private void addToUsedUrls(string p)
