@@ -7,7 +7,7 @@ Simple GUI made for [livestreamer](http://livestreamer.readthedocs.org/en/latest
 For license google GPLv2 or look at LICENSE file
 
 ## Download
-Grab this [link](https://dl.dropboxusercontent.com/u/35418266/dev/livestreamer-gui/livestreamer-gui-1.4.exe),
+Grab this [link](https://dl.dropboxusercontent.com/u/35418266/dev/livestreamer-gui/livestreamer-gui-1.5.exe),
 it requires .NET 4.5. Also it is not bundled with livestreamer!
 
 ## Changelog
@@ -24,6 +24,7 @@ it requires .NET 4.5. Also it is not bundled with livestreamer!
 * Added autocomplete feature
 
 ## Old Versions:
+* [1.5](https://dl.dropboxusercontent.com/u/35418266/dev/livestreamer-gui/livestreamer-gui-1.5.exe)
 * [1.4.1](https://dl.dropboxusercontent.com/u/35418266/dev/livestreamer-gui/livestreamer-gui-1.4.1.exe)
 * [1.4](https://dl.dropboxusercontent.com/u/35418266/dev/livestreamer-gui/livestreamer-gui-1.4.exe)
 * [1.3](https://dl.dropboxusercontent.com/u/35418266/dev/livestreamer-gui/livestreamer-gui-1.3.exe)
