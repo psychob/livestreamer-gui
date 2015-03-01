@@ -286,5 +286,16 @@ namespace livestreamer_gui
 
    xmlWriter.Close();
   }
+
+  private void button2_Click(object sender, EventArgs e)
+  {
+   AutoComplete ac = new AutoComplete();
+
+   ac.usedUrls = usedUrls;
+   ac.ShowDialog(this);
+   usedUrls = ac.usedUrls;
+
+   ac = null;
+  }
  }
 }

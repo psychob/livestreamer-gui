@@ -33,6 +33,7 @@
    this.cbQuality = new System.Windows.Forms.ComboBox();
    this.tcMainTabControl = new System.Windows.Forms.TabControl();
    this.tbOptionsPage = new System.Windows.Forms.TabPage();
+   this.btnChooseLivestreamerPath = new System.Windows.Forms.Button();
    this.cbGenerateMetadataForVLC = new System.Windows.Forms.CheckBox();
    this.label4 = new System.Windows.Forms.Label();
    this.label3 = new System.Windows.Forms.Label();
@@ -46,7 +47,7 @@
    this.tbLivestreamerPath = new System.Windows.Forms.TextBox();
    this.button1 = new System.Windows.Forms.Button();
    this.tbOutput = new System.Windows.Forms.TextBox();
-   this.btnChooseLivestreamerPath = new System.Windows.Forms.Button();
+   this.btnAutoCompleteInfo = new System.Windows.Forms.Button();
    this.tcMainTabControl.SuspendLayout();
    this.tbOptionsPage.SuspendLayout();
    ((System.ComponentModel.ISupportInitialize)(this.nupDelay)).BeginInit();
@@ -90,6 +91,7 @@
    // 
    // tbOptionsPage
    // 
+   this.tbOptionsPage.Controls.Add(this.btnAutoCompleteInfo);
    this.tbOptionsPage.Controls.Add(this.btnChooseLivestreamerPath);
    this.tbOptionsPage.Controls.Add(this.cbGenerateMetadataForVLC);
    this.tbOptionsPage.Controls.Add(this.label4);
@@ -109,6 +111,16 @@
    this.tbOptionsPage.TabIndex = 0;
    this.tbOptionsPage.Text = "Options";
    this.tbOptionsPage.UseVisualStyleBackColor = true;
+   // 
+   // btnChooseLivestreamerPath
+   // 
+   this.btnChooseLivestreamerPath.Location = new System.Drawing.Point(324, 6);
+   this.btnChooseLivestreamerPath.Name = "btnChooseLivestreamerPath";
+   this.btnChooseLivestreamerPath.Size = new System.Drawing.Size(37, 20);
+   this.btnChooseLivestreamerPath.TabIndex = 11;
+   this.btnChooseLivestreamerPath.Text = "...";
+   this.btnChooseLivestreamerPath.UseVisualStyleBackColor = true;
+   this.btnChooseLivestreamerPath.Click += new System.EventHandler(this.btnChooseLivestreamerPath_Click);
    // 
    // cbGenerateMetadataForVLC
    // 
@@ -253,15 +265,15 @@
    this.tbOutput.Size = new System.Drawing.Size(375, 114);
    this.tbOutput.TabIndex = 5;
    // 
-   // btnChooseLivestreamerPath
+   // btnAutoCompleteInfo
    // 
-   this.btnChooseLivestreamerPath.Location = new System.Drawing.Point(324, 6);
-   this.btnChooseLivestreamerPath.Name = "btnChooseLivestreamerPath";
-   this.btnChooseLivestreamerPath.Size = new System.Drawing.Size(37, 20);
-   this.btnChooseLivestreamerPath.TabIndex = 11;
-   this.btnChooseLivestreamerPath.Text = "...";
-   this.btnChooseLivestreamerPath.UseVisualStyleBackColor = true;
-   this.btnChooseLivestreamerPath.Click += new System.EventHandler(this.btnChooseLivestreamerPath_Click);
+   this.btnAutoCompleteInfo.Location = new System.Drawing.Point(6, 181);
+   this.btnAutoCompleteInfo.Name = "btnAutoCompleteInfo";
+   this.btnAutoCompleteInfo.Size = new System.Drawing.Size(113, 23);
+   this.btnAutoCompleteInfo.TabIndex = 12;
+   this.btnAutoCompleteInfo.Text = "Auto Complete";
+   this.btnAutoCompleteInfo.UseVisualStyleBackColor = true;
+   this.btnAutoCompleteInfo.Click += new System.EventHandler(this.button2_Click);
    // 
    // MainWindow
    // 
@@ -311,5 +323,6 @@
   private System.Windows.Forms.Button button1;
   private System.Windows.Forms.TextBox tbOutput;
   private System.Windows.Forms.Button btnChooseLivestreamerPath;
+  private System.Windows.Forms.Button btnAutoCompleteInfo;
  }
 }

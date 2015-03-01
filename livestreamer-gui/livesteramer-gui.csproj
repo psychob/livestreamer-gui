@@ -61,6 +61,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AutoComplete.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="AutoComplete.Designer.cs">
+      <DependentUpon>AutoComplete.cs</DependentUpon>
+    </Compile>
     <Compile Include="ConfigurationClass.cs" />
     <Compile Include="MainWindow.cs">
       <SubType>Form</SubType>
@@ -76,6 +82,9 @@
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="WebsiteAPI.cs" />
+    <EmbeddedResource Include="AutoComplete.resx">
+      <DependentUpon>AutoComplete.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="MainWindow.resx">
       <DependentUpon>MainWindow.cs</DependentUpon>
     </EmbeddedResource>
