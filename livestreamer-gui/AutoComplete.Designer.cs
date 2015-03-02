@@ -41,13 +41,13 @@
    this.lbItems.FormattingEnabled = true;
    this.lbItems.Location = new System.Drawing.Point(12, 12);
    this.lbItems.Name = "lbItems";
-   this.lbItems.Size = new System.Drawing.Size(144, 277);
+   this.lbItems.Size = new System.Drawing.Size(290, 277);
    this.lbItems.TabIndex = 0;
    // 
    // btnRemove
    // 
    this.btnRemove.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-   this.btnRemove.Location = new System.Drawing.Point(162, 12);
+   this.btnRemove.Location = new System.Drawing.Point(308, 12);
    this.btnRemove.Name = "btnRemove";
    this.btnRemove.Size = new System.Drawing.Size(75, 23);
    this.btnRemove.TabIndex = 1;
@@ -58,7 +58,7 @@
    // btnClearList
    // 
    this.btnClearList.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-   this.btnClearList.Location = new System.Drawing.Point(162, 41);
+   this.btnClearList.Location = new System.Drawing.Point(308, 41);
    this.btnClearList.Name = "btnClearList";
    this.btnClearList.Size = new System.Drawing.Size(75, 23);
    this.btnClearList.TabIndex = 2;
@@ -70,7 +70,7 @@
    // 
    this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
    this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-   this.ClientSize = new System.Drawing.Size(249, 300);
+   this.ClientSize = new System.Drawing.Size(395, 300);
    this.Controls.Add(this.btnClearList);
    this.Controls.Add(this.btnRemove);
    this.Controls.Add(this.lbItems);

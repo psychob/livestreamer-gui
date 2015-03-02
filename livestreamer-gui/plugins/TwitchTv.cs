@@ -118,7 +118,6 @@ namespace livestreamer_gui.plugins
   Label layout_labelChannel,
           layout_labelVOD,
           layout_labelTime,
-          layout_labelIsHighlight,
           layout_labelh,
           layout_labelm,
           layout_labels;
@@ -140,7 +139,6 @@ namespace livestreamer_gui.plugins
    layout_labelVOD = new Label();
    layout_boxVOD = new TextBox();
    layout_labelTime = new Label();
-   layout_labelIsHighlight = new Label();
    layout_numHour = new NumericUpDown();
    layout_numMinute = new NumericUpDown();
    layout_numSecond = new NumericUpDown();
@@ -155,66 +153,71 @@ namespace livestreamer_gui.plugins
    layout_labelChannel.Size = new System.Drawing.Size(81, 20);
 
    layout_boxChannel.Location = new System.Drawing.Point(85, 7);
-   layout_boxChannel.Size = new System.Drawing.Size(295, 20);
+   layout_boxChannel.Size = new System.Drawing.Size(275, 20);
    layout_boxChannel.TextChanged += evenChanger;
 
    layout_labelVOD.Text = "VOD:";
-   layout_labelVOD.Location = new System.Drawing.Point(3, 40);
+   layout_labelVOD.Location = new System.Drawing.Point(3, 35);
    layout_labelVOD.Size = new System.Drawing.Size(81, 20);
 
-   layout_boxVOD.Location = new System.Drawing.Point(85, 37);
-   layout_boxVOD.Size = new System.Drawing.Size(295, 20);
+   layout_boxVOD.Location = new System.Drawing.Point(85, 30);
+   layout_boxVOD.Size = new System.Drawing.Size(275, 20);
    layout_boxVOD.TextChanged += evenChanger;
 
    layout_labelTime.Text = "Start Time:";
-   layout_labelTime.Location = new System.Drawing.Point(3, 63);
+   layout_labelTime.Location = new System.Drawing.Point(3, 60);
    layout_labelTime.Size = new System.Drawing.Size(81, 20);
 
    layout_numHour.Minimum = 0;
    layout_numHour.Maximum = 24 * 5;
-   layout_numHour.Location = new System.Drawing.Point(85, 60);
+   layout_numHour.Location = new System.Drawing.Point(85, 55);
    layout_numHour.Size = new System.Drawing.Size(50, 20);
    layout_numHour.ValueChanged += evenChanger;
 
    layout_labelh.Text = "h";
-   layout_labelh.Location = new System.Drawing.Point(140, 63);
+   layout_labelh.Location = new System.Drawing.Point(140, 60);
    layout_labelh.Size = new System.Drawing.Size(10, 20);
 
    layout_numMinute.Minimum = 0;
-   layout_numMinute.Maximum = 60;
-   layout_numMinute.Location = new System.Drawing.Point(155, 60);
+   layout_numMinute.Maximum = 1000;
+   layout_numMinute.Location = new System.Drawing.Point(155, 55);
    layout_numMinute.Size = new System.Drawing.Size(50, 20);
    layout_numMinute.ValueChanged += evenChanger;
 
    layout_labelm.Text = "m";
-   layout_labelm.Location = new System.Drawing.Point(210, 63);
+   layout_labelm.Location = new System.Drawing.Point(210, 60);
    layout_labelm.Size = new System.Drawing.Size(10, 20);
 
    layout_numSecond.Minimum = 0;
-   layout_numSecond.Maximum = 60;
-   layout_numSecond.Location = new System.Drawing.Point(225, 60);
+   layout_numSecond.Maximum = 1000;
+   layout_numSecond.Location = new System.Drawing.Point(225, 55);
    layout_numSecond.Size = new System.Drawing.Size(50, 20);
    layout_numSecond.ValueChanged += evenChanger;
 
    layout_labels.Text = "s";
-   layout_labels.Location = new System.Drawing.Point(280, 63);
+   layout_labels.Location = new System.Drawing.Point(280, 60);
    layout_labels.Size = new System.Drawing.Size(10, 20);
 
-   layout_labelIsHighlight.Text = "Is Highlight:";
-   layout_labelIsHighlight.Location = new System.Drawing.Point(3, 86);
-   layout_labelIsHighlight.Size = new System.Drawing.Size(81, 20);
-
-   layout_checkhightligh.Location = new System.Drawing.Point(85, 83);
+   layout_checkhightligh.Location = new System.Drawing.Point(3, 75);
    layout_checkhightligh.CheckedChanged += evenChanger;
+   layout_checkhightligh.Text = "Is highlight: ";
+   layout_checkhightligh.CheckAlign = System.Drawing.ContentAlignment.MiddleRight;
 
    // dodawanie do komponentów
    layout_mtp.Controls.AddRange(
-    new Control[]{layout_labelChannel, layout_boxChannel, layout_labelVOD,
-                  layout_boxVOD, layout_labelTime, layout_labelIsHighlight,
-                  layout_numHour, layout_numMinute, layout_numSecond,
-                  layout_labelh, layout_labelm, layout_labels,
-                  layout_checkhightligh}
-   );
+    new Control[]{ layout_labelChannel,
+                   layout_boxChannel,
+                   layout_labelVOD,
+                   layout_boxVOD,
+                   layout_labelTime,
+                   layout_numHour,
+                   layout_numMinute,
+                   layout_numSecond,
+                   layout_labelh,
+                   layout_labelm,
+                   layout_labels,
+                   layout_checkhightligh
+    });
 
    // dodwanie taba
    mfi.tabControl.TabPages.Add(layout_mtp);
