@@ -33,6 +33,7 @@
    this.cbQuality = new System.Windows.Forms.ComboBox();
    this.tcMainTabControl = new System.Windows.Forms.TabControl();
    this.tbOptionsPage = new System.Windows.Forms.TabPage();
+   this.btnAutoCompleteInfo = new System.Windows.Forms.Button();
    this.btnChooseLivestreamerPath = new System.Windows.Forms.Button();
    this.cbGenerateMetadataForVLC = new System.Windows.Forms.CheckBox();
    this.label4 = new System.Windows.Forms.Label();
@@ -47,7 +48,9 @@
    this.tbLivestreamerPath = new System.Windows.Forms.TextBox();
    this.button1 = new System.Windows.Forms.Button();
    this.tbOutput = new System.Windows.Forms.TextBox();
-   this.btnAutoCompleteInfo = new System.Windows.Forms.Button();
+   this.tbPlayerPath = new System.Windows.Forms.TextBox();
+   this.btnChoosePlayer = new System.Windows.Forms.Button();
+   this.label5 = new System.Windows.Forms.Label();
    this.tcMainTabControl.SuspendLayout();
    this.tbOptionsPage.SuspendLayout();
    ((System.ComponentModel.ISupportInitialize)(this.nupDelay)).BeginInit();
@@ -91,6 +94,9 @@
    // 
    // tbOptionsPage
    // 
+   this.tbOptionsPage.Controls.Add(this.label5);
+   this.tbOptionsPage.Controls.Add(this.btnChoosePlayer);
+   this.tbOptionsPage.Controls.Add(this.tbPlayerPath);
    this.tbOptionsPage.Controls.Add(this.btnAutoCompleteInfo);
    this.tbOptionsPage.Controls.Add(this.btnChooseLivestreamerPath);
    this.tbOptionsPage.Controls.Add(this.cbGenerateMetadataForVLC);
@@ -112,6 +118,16 @@
    this.tbOptionsPage.Text = "Options";
    this.tbOptionsPage.UseVisualStyleBackColor = true;
    // 
+   // btnAutoCompleteInfo
+   // 
+   this.btnAutoCompleteInfo.Location = new System.Drawing.Point(6, 213);
+   this.btnAutoCompleteInfo.Name = "btnAutoCompleteInfo";
+   this.btnAutoCompleteInfo.Size = new System.Drawing.Size(113, 23);
+   this.btnAutoCompleteInfo.TabIndex = 12;
+   this.btnAutoCompleteInfo.Text = "Auto Complete";
+   this.btnAutoCompleteInfo.UseVisualStyleBackColor = true;
+   this.btnAutoCompleteInfo.Click += new System.EventHandler(this.button2_Click);
+   // 
    // btnChooseLivestreamerPath
    // 
    this.btnChooseLivestreamerPath.Location = new System.Drawing.Point(324, 6);
@@ -127,7 +143,7 @@
    this.cbGenerateMetadataForVLC.AutoSize = true;
    this.cbGenerateMetadataForVLC.Checked = true;
    this.cbGenerateMetadataForVLC.CheckState = System.Windows.Forms.CheckState.Checked;
-   this.cbGenerateMetadataForVLC.Location = new System.Drawing.Point(6, 158);
+   this.cbGenerateMetadataForVLC.Location = new System.Drawing.Point(6, 190);
    this.cbGenerateMetadataForVLC.Name = "cbGenerateMetadataForVLC";
    this.cbGenerateMetadataForVLC.Size = new System.Drawing.Size(155, 17);
    this.cbGenerateMetadataForVLC.TabIndex = 10;
@@ -137,7 +153,7 @@
    // label4
    // 
    this.label4.AutoSize = true;
-   this.label4.Location = new System.Drawing.Point(6, 111);
+   this.label4.Location = new System.Drawing.Point(6, 143);
    this.label4.Name = "label4";
    this.label4.Size = new System.Drawing.Size(81, 13);
    this.label4.TabIndex = 9;
@@ -146,7 +162,7 @@
    // label3
    // 
    this.label3.AutoSize = true;
-   this.label3.Location = new System.Drawing.Point(6, 85);
+   this.label3.Location = new System.Drawing.Point(6, 117);
    this.label3.Name = "label3";
    this.label3.Size = new System.Drawing.Size(102, 13);
    this.label3.TabIndex = 8;
@@ -173,7 +189,7 @@
    // cbDontShowConsoleWindow
    // 
    this.cbDontShowConsoleWindow.AutoSize = true;
-   this.cbDontShowConsoleWindow.Location = new System.Drawing.Point(6, 135);
+   this.cbDontShowConsoleWindow.Location = new System.Drawing.Point(6, 167);
    this.cbDontShowConsoleWindow.Name = "cbDontShowConsoleWindow";
    this.cbDontShowConsoleWindow.Size = new System.Drawing.Size(165, 17);
    this.cbDontShowConsoleWindow.TabIndex = 5;
@@ -185,7 +201,7 @@
    this.cbTryRetry.AutoSize = true;
    this.cbTryRetry.Checked = true;
    this.cbTryRetry.CheckState = System.Windows.Forms.CheckState.Checked;
-   this.cbTryRetry.Location = new System.Drawing.Point(6, 60);
+   this.cbTryRetry.Location = new System.Drawing.Point(6, 92);
    this.cbTryRetry.Name = "cbTryRetry";
    this.cbTryRetry.Size = new System.Drawing.Size(76, 17);
    this.cbTryRetry.TabIndex = 4;
@@ -194,7 +210,7 @@
    // 
    // nupDelay
    // 
-   this.nupDelay.Location = new System.Drawing.Point(115, 109);
+   this.nupDelay.Location = new System.Drawing.Point(115, 141);
    this.nupDelay.Maximum = new decimal(new int[] {
             1000,
             0,
@@ -211,7 +227,7 @@
    // 
    // nupAttempts
    // 
-   this.nupAttempts.Location = new System.Drawing.Point(115, 83);
+   this.nupAttempts.Location = new System.Drawing.Point(115, 115);
    this.nupAttempts.Maximum = new decimal(new int[] {
             1000,
             0,
@@ -265,15 +281,31 @@
    this.tbOutput.Size = new System.Drawing.Size(375, 114);
    this.tbOutput.TabIndex = 5;
    // 
-   // btnAutoCompleteInfo
+   // tbPlayerPath
    // 
-   this.btnAutoCompleteInfo.Location = new System.Drawing.Point(6, 181);
-   this.btnAutoCompleteInfo.Name = "btnAutoCompleteInfo";
-   this.btnAutoCompleteInfo.Size = new System.Drawing.Size(113, 23);
-   this.btnAutoCompleteInfo.TabIndex = 12;
-   this.btnAutoCompleteInfo.Text = "Auto Complete";
-   this.btnAutoCompleteInfo.UseVisualStyleBackColor = true;
-   this.btnAutoCompleteInfo.Click += new System.EventHandler(this.button2_Click);
+   this.tbPlayerPath.Location = new System.Drawing.Point(115, 60);
+   this.tbPlayerPath.Name = "tbPlayerPath";
+   this.tbPlayerPath.Size = new System.Drawing.Size(203, 20);
+   this.tbPlayerPath.TabIndex = 13;
+   // 
+   // btnChoosePlayer
+   // 
+   this.btnChoosePlayer.Location = new System.Drawing.Point(324, 60);
+   this.btnChoosePlayer.Name = "btnChoosePlayer";
+   this.btnChoosePlayer.Size = new System.Drawing.Size(37, 20);
+   this.btnChoosePlayer.TabIndex = 14;
+   this.btnChoosePlayer.Text = "...";
+   this.btnChoosePlayer.UseVisualStyleBackColor = true;
+   this.btnChoosePlayer.Click += new System.EventHandler(this.btnChoosePlayer_Click);
+   // 
+   // label5
+   // 
+   this.label5.AutoSize = true;
+   this.label5.Location = new System.Drawing.Point(6, 63);
+   this.label5.Name = "label5";
+   this.label5.Size = new System.Drawing.Size(75, 13);
+   this.label5.TabIndex = 15;
+   this.label5.Text = "Path to player:";
    // 
    // MainWindow
    // 
@@ -324,5 +356,8 @@
   private System.Windows.Forms.TextBox tbOutput;
   private System.Windows.Forms.Button btnChooseLivestreamerPath;
   private System.Windows.Forms.Button btnAutoCompleteInfo;
+  private System.Windows.Forms.Button btnChoosePlayer;
+  private System.Windows.Forms.TextBox tbPlayerPath;
+  private System.Windows.Forms.Label label5;
  }
 }

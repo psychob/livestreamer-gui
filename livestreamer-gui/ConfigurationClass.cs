@@ -22,5 +22,6 @@
   public bool dontShowConsole;
   public bool generateVlcMetadata;
   public UsedUrls[] usedUrls;
+  public string playerPath;
  }
 }

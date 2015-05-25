@@ -41,6 +41,7 @@ namespace livestreamer_gui
     cbDontShowConsoleWindow.Checked = cfgClass.dontShowConsole;
     cbGenerateMetadataForVLC.Checked = cfgClass.generateVlcMetadata;
     usedUrls = cfgClass.usedUrls;
+    tbPlayerPath.Text = cfgClass.playerPath;
 
     if ( usedUrls != null )
     {
@@ -126,6 +127,9 @@ namespace livestreamer_gui
     if ( nupDelay.Value > 1 )
      prc.StartInfo.Arguments += "--retry-streams " + nupDelay.Value.ToString() + " ";
    }
+
+   if (tbPlayerPath.Text != "")
+    prc.StartInfo.Arguments += "--player \"" + tbPlayerPath.Text + "\" ";
 
    if ( cbGenerateMetadataForVLC.Checked )
    {
@@ -283,6 +287,7 @@ namespace livestreamer_gui
    cfgClass.dontShowConsole = cbDontShowConsoleWindow.Checked;
    cfgClass.generateVlcMetadata = cbGenerateMetadataForVLC.Checked;
    cfgClass.usedUrls = usedUrls;
+   cfgClass.playerPath = tbPlayerPath.Text;
 
    System.Xml.Serialization.XmlSerializer xmlSerialiser = new System.Xml.Serialization.XmlSerializer(cfgClass.GetType());
 
@@ -306,6 +311,19 @@ namespace livestreamer_gui
    usedUrls = ac.usedUrls;
 
    ac = null;
+  }
+
+  private void btnChoosePlayer_Click(object sender, EventArgs e)
+  {
+   OpenFileDialog ofd = new OpenFileDialog();
+
+   ofd.Filter = "Players|*.exe|All Files|*.*";
+   ofd.CheckFileExists = true;
+
+   if (ofd.ShowDialog() != System.Windows.Forms.DialogResult.OK)
+    return;
+
+   tbPlayerPath.Text = ofd.FileName;
   }
  }
 }
