@@ -67,7 +67,8 @@
     <Compile Include="AutoComplete.Designer.cs">
       <DependentUpon>AutoComplete.cs</DependentUpon>
     </Compile>
-    <Compile Include="ConfigurationClass.cs" />
+    <Compile Include="ConfigurationDatabase.cs" />
+    <Compile Include="ExtenstionMethods.cs" />
     <Compile Include="gui\ConfigurationWindow.cs">
       <SubType>Form</SubType>
     </Compile>
