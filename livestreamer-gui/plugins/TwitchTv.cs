@@ -1,256 +1,375 @@
 ﻿//
 // livestreamer-gui
-// (c) 2014 Andrzej Budzanowski <psychob.pl@gmail.com>
+// (c) 2014 - 2016 Andrzej Budzanowski <psychob.pl@gmail.com>
 //
-// This program is free software; you can redistribute it and/or modify
-// it under the terms of the GNU General Public License as published by
-// the Free Software Foundation; either version 2 of the License, or
-// any later version.
-//
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
-//
-// You should have received a copy of the GNU General Public License along
-// with this program; if not, write to the Free Software Foundation, Inc.,
-// 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
-//
-using System.IO;
-using System.Net;
-using System.Windows.Forms;
-using System.Web;
-using System.Web.Script.Serialization;
+
+using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Net;
+using System.Text;
+using System.Threading.Tasks;
+using System.Web.Script.Serialization;
+using System.Windows.Forms;
 
 namespace livestreamer_gui.plugins
 {
- class TwitchTv : WebsiteAPI
- {
-  public bool isMyUri(System.Uri url)
-  {
-   if ( url.Host == "www.twitch.tv" || url.Host == "twitch.tv" )
-   {
-    if (url.Segments.Length < 2)
-     return false;
-
-    layout_boxChannel.Text = url.Segments[1].Trim('/').Trim();
-    layout_checkhightligh.Checked = false;
-    layout_boxVOD.Text = "";
-    layout_numHour.Value = 0;
-    layout_numMinute.Value = 0;
-    layout_numSecond.Value = 0;
-
-    if (url.Segments.Length != 4)
-     return true;
-
-    if (url.Segments[2].Trim('/').Trim() == "c")
-     layout_checkhightligh.Checked = true;
-
-    layout_boxVOD.Text = url.Segments[3].Trim('/').Trim();
-
-    return true;
-   }
-
-   return false;
-  }
-
-  public string getStreamTitle()
-  {
-   return stream_title == "" ? getName() : stream_title;
-  }
-
-  public string getStreamAuthor()
-  {
-   return stream_author == "" ? getName() : stream_author;
-  }
-
-  string getName( )
-  {
-   return layout_boxChannel.Text.Trim();
-  }
-
-  public string getCanonicalUrl()
-  {
-   if (layout_boxVOD.Text == "")
-    return "http://www.twitch.tv/" + getName();
-   else
-   {
-    string append = "";
-
-    if (layout_numHour.Value > 0 || layout_numMinute.Value > 0 || layout_numSecond.Value > 0)
+    class TwitchTv : PluginAPI
     {
-     append = "?t=";
-     if (layout_numHour.Value > 0)
-      append += layout_numHour.Value.ToString() + "h";
-     if (layout_numMinute.Value > 0)
-      append += layout_numMinute.Value.ToString() + "m";
-     if (layout_numSecond.Value > 0)
-      append += layout_numSecond.Value.ToString() + "s";
+        TabPage layoutTabPage;
+        Label layoutLabelChannelName, layoutLabelVOD, layoutLabelTime,
+            layoutLabelH, layoutLabelM, layoutLabelS;
+        TextBox layoutTextBoxChannel, layoutTextBoxVOD;
+        NumericUpDown layoutNudHour, layoutNudMinute, layoutNudSecond;
+        CheckBox layoutCheckBoxIsHighlight;
+        InitData localInitData;
+        List<ConfigurationDatabase.AutocompleteData> ad;
+
+        private string StreamName
+        {
+            get
+            {
+                return layoutTextBoxChannel.Text.Trim();
+            }
+        }
+
+        private bool IsVod
+        {
+            get
+            {
+                return layoutTextBoxVOD.Text.Trim() != "";
+            }
+        }
+
+        private string VodId
+        {
+            get
+            {
+                return layoutTextBoxVOD.Text.Trim();
+            }
+        }
+
+        public string GetPluginId()
+        {
+            return "twitchtv";
+        }
+
+        public StreamInfo GetVideoMedatada()
+        {
+            StreamInfo retInfo = new StreamInfo();
+
+            if (localInitData.Config.GetBoolean(ConfigurationConstants.ApiInternetAccess,
+                true, false))
+            {
+                if (!IsVod)
+                {
+                    string apiSite = "https://api.twitch.tv/kraken/channels/" + StreamName;
+
+                    WebRequest wr = WebRequest.Create(apiSite);
+                    WebResponse wre = wr.GetResponse();
+                    string html = string.Empty;
+
+                    using (Stream data = wre.GetResponseStream())
+                    {
+                        using (StreamReader sr = new StreamReader(data))
+                        {
+                            html = sr.ReadToEnd();
+                        }
+                    }
+
+                    JavaScriptSerializer jss = new JavaScriptSerializer();
+                    var dict = jss.Deserialize<Dictionary<string, object>>(html);
+
+                    retInfo.Author = (string)dict["display_name"];
+                    retInfo.Title = "Playing: " + (string)dict["game"] + " - " + (string)dict["status"];
+                    retInfo.CanonicalUrl = (string)dict["url"];
+                }
+                else
+                {
+                    string apiSite = "https://api.twitch.tv/kraken/videos/v" + VodId;
+
+                    WebRequest wr = WebRequest.Create(apiSite);
+                    WebResponse wre = wr.GetResponse();
+                    string html = string.Empty;
+
+                    using (Stream data = wre.GetResponseStream())
+                    {
+                        using (StreamReader sr = new StreamReader(data))
+                        {
+                            html = sr.ReadToEnd();
+                        }
+                    }
+
+                    JavaScriptSerializer jss = new JavaScriptSerializer();
+                    var dict = jss.Deserialize<Dictionary<string, object>>(html);
+
+                    retInfo.Author = StreamName;
+                    retInfo.Title = "Playing: " + (string)dict["game"] + " - " + (string)dict["title"];
+                    retInfo.CanonicalUrl = GetCanonicalUrl();
+
+                }
+            }
+            else
+            {
+                retInfo.Author = StreamName;
+                retInfo.Title = "Stream of " + StreamName;
+                retInfo.CanonicalUrl = GetCanonicalUrl();
+            }
+
+            return retInfo;
+        }
+
+        public string GetCanonicalUrl()
+        {
+            if (!IsVod)
+                return "http://twitch.tv/" + StreamName;
+            else
+            {
+                string ret = "http://twitch.tv/" + StreamName + "/v/" + VodId;
+
+                if (layoutNudHour.Value != 0 || layoutNudMinute.Value != 0 || layoutNudSecond.Value != 0)
+                {
+                    ret += "?t=";
+
+                    if (layoutNudHour.Value != 0)
+                        ret += layoutNudHour.Value + "h";
+
+                    if (layoutNudMinute.Value != 0)
+                        ret += layoutNudMinute.Value + "m";
+
+                    if (layoutNudSecond.Value != 0)
+                        ret += layoutNudSecond.Value + "s";
+                }
+
+                return ret;
+            }
+        }
+
+        public void InitTab(InitData data)
+        {
+            localInitData = data;
+
+            ad = localInitData.Config.GetAutocomplete("autocompletelist");
+
+            // tworzenie
+            layoutTabPage = new TabPage("twitch.tv");
+            layoutLabelChannelName = new Label();
+            layoutTextBoxChannel = new TextBox();
+            layoutLabelVOD = new Label();
+            layoutTextBoxVOD = new TextBox();
+            layoutLabelTime = new Label();
+            layoutNudHour = new NumericUpDown();
+            layoutNudMinute = new NumericUpDown();
+            layoutNudSecond = new NumericUpDown();
+            layoutLabelH = new Label();
+            layoutLabelM = new Label();
+            layoutLabelS = new Label();
+            layoutCheckBoxIsHighlight = new CheckBox();
+
+            // inicjalizacja
+            layoutLabelChannelName.Text = "Channel Name:";
+            layoutLabelChannelName.Location = new System.Drawing.Point(8, 9);
+            layoutLabelChannelName.Size = new System.Drawing.Size(81, 20);
+
+            layoutTextBoxChannel.Location = new System.Drawing.Point(152, 6);
+            layoutTextBoxChannel.Size = new System.Drawing.Size(243, 20);
+            layoutTextBoxChannel.TextChanged += evenChanger;
+            layoutTextBoxChannel.AutoCompleteMode = AutoCompleteMode.Suggest;
+            layoutTextBoxChannel.AutoCompleteSource = AutoCompleteSource.CustomSource;
+            layoutTextBoxChannel.AutoCompleteCustomSource = new AutoCompleteStringCollection();
+
+            if (ad != null)
+                layoutTextBoxChannel.AutoCompleteCustomSource.AddRange(ad.Rewrite(r => r.url));
+
+            layoutLabelVOD.Text = "VOD:";
+            layoutLabelVOD.Location = new System.Drawing.Point(8, 35);
+            layoutLabelVOD.Size = new System.Drawing.Size(81, 20);
+
+            layoutTextBoxVOD.Location = new System.Drawing.Point(152, 32);
+            layoutTextBoxVOD.Size = new System.Drawing.Size(243, 20);
+            layoutTextBoxVOD.TextChanged += evenChanger;
+
+            layoutLabelTime.Text = "Start Time:";
+            layoutLabelTime.Location = new System.Drawing.Point(8, 62);
+            layoutLabelTime.Size = new System.Drawing.Size(81, 20);
+
+            layoutNudHour.Minimum = 0;
+            layoutNudHour.Maximum = 24 * 24;
+            layoutNudHour.Location = new System.Drawing.Point(152, 59);
+            layoutNudHour.Size = new System.Drawing.Size(50, 20);
+            layoutNudHour.ValueChanged += evenChanger;
+
+            layoutLabelH.Text = "h";
+            layoutLabelH.Location = new System.Drawing.Point(202, 63);
+            layoutLabelH.Size = new System.Drawing.Size(10, 20);
+
+            layoutNudMinute.Minimum = 0;
+            layoutNudMinute.Maximum = 59;
+            layoutNudMinute.Location = new System.Drawing.Point(217, 59);
+            layoutNudMinute.Size = new System.Drawing.Size(50, 20);
+            layoutNudMinute.ValueChanged += evenChanger;
+
+            layoutLabelM.Text = "m";
+            layoutLabelM.Location = new System.Drawing.Point(267, 63);
+            layoutLabelM.Size = new System.Drawing.Size(10, 20);
+
+            layoutNudSecond.Minimum = 0;
+            layoutNudSecond.Maximum = 59;
+            layoutNudSecond.Location = new System.Drawing.Point(282, 59);
+            layoutNudSecond.Size = new System.Drawing.Size(50, 20);
+            layoutNudSecond.ValueChanged += evenChanger;
+
+            layoutLabelS.Text = "s";
+            layoutLabelS.Location = new System.Drawing.Point(332, 63);
+            layoutLabelS.Size = new System.Drawing.Size(10, 20);
+
+            layoutCheckBoxIsHighlight.Location = new System.Drawing.Point(7, 85);
+            layoutCheckBoxIsHighlight.Size = new System.Drawing.Size(160, 20);
+            layoutCheckBoxIsHighlight.CheckedChanged += evenChanger;
+            layoutCheckBoxIsHighlight.Text = "Is highlight: ";
+            layoutCheckBoxIsHighlight.CheckAlign = System.Drawing.ContentAlignment.MiddleRight;
+
+            // dodawanie do komponentów
+            layoutTabPage.Controls.AddRange(
+             new Control[]{ layoutLabelChannelName,
+                   layoutTextBoxChannel,
+                   layoutLabelVOD,
+                   layoutTextBoxVOD,
+                   layoutLabelTime,
+                   layoutNudHour,
+                   layoutNudMinute,
+                   layoutNudSecond,
+                   layoutLabelH,
+                   layoutLabelM,
+                   layoutLabelS,
+                   layoutCheckBoxIsHighlight
+             });
+
+            // dodwanie taba
+            localInitData.Control.TabPages.Add(layoutTabPage);
+        }
+
+        private void evenChanger(object sender, EventArgs e)
+        {
+            localInitData.TabUpdated(GetPluginId());
+        }
+
+        public bool Owns(Uri url)
+        {
+            if (url.Host.ToLowerInvariant().IndexOf("twitch.tv") == -1)
+                return false;
+
+            string pq = url.PathAndQuery;
+            int next_q = 0;
+
+            if (pq.Length == 0 || pq == "/")
+                return false;
+
+            pq = pq.Substring(1);
+            next_q = pq.IndexOf('/');
+
+            layoutTextBoxChannel.Text = "";
+            layoutTextBoxVOD.Text = "";
+            layoutNudMinute.Value = 0;
+            layoutNudHour.Value = 0;
+            layoutNudSecond.Value = 0;
+            layoutCheckBoxIsHighlight.Checked = false;
+
+            // nie ma żadnej dodatkowej informacji
+            if (next_q == -1)
+            {
+                layoutTextBoxChannel.Text = pq;
+                layoutTextBoxVOD.Text = "";
+                layoutNudMinute.Value = 0;
+                layoutNudHour.Value = 0;
+                layoutNudSecond.Value = 0;
+            }
+            else
+            {
+                layoutTextBoxChannel.Text = pq.Substring(0, next_q);
+
+                pq = pq.Substring(next_q + 1);
+
+                if (pq.Length <= 2)
+                    return true;
+
+                pq = pq.Substring(2);
+
+                next_q = pq.IndexOf('?');
+
+                if (next_q == -1)
+                {
+                    layoutTextBoxVOD.Text = pq;
+                }
+                else
+                {
+                    layoutTextBoxVOD.Text = pq.Substring(0, next_q);
+
+                    pq = pq.Substring(next_q + 1);
+
+                    if (pq.Length <= 2)
+                        return true;
+
+                    pq = pq.Substring(2);
+
+                    int h = 0, m = 0, s = 0;
+                    int current = 0;
+
+                    foreach (var it in pq)
+                    {
+                        switch (it)
+                        {
+                            case 'h':
+                                h = current;
+                                current = 0;
+                                break;
+
+                            case 'm':
+                                m = current;
+                                current = 0;
+                                break;
+
+                            case 's':
+                                s = current;
+                                current = 0;
+                                break;
+
+                            default:
+                                current *= 10;
+                                current += Convert.ToInt32(it) - 0x30;
+                                break;
+                        }
+                    }
+
+                    layoutNudHour.Value = Convert.ToDecimal(h);
+                    layoutNudMinute.Value = Convert.ToDecimal(m);
+                    layoutNudSecond.Value = Convert.ToDecimal(s);
+                }
+            }
+
+            return true;
+        }
+
+        public void StreamStarted()
+        {
+            int io = ad.FindIndex(p => p.url == StreamName);
+
+            if (io == -1)
+                ad.Add(new ConfigurationDatabase.AutocompleteData(StreamName));
+            else
+            {
+                var tmp = ad[io];
+                ad[io] = new ConfigurationDatabase.AutocompleteData(tmp.url, tmp.count + 1);
+            }
+
+            layoutTextBoxChannel.AutoCompleteCustomSource.Clear();
+            layoutTextBoxChannel.AutoCompleteCustomSource.AddRange(ad.Rewrite(r => r.url));
+        }
+
+        public void ShutDown()
+        {
+            localInitData.Config.SetAutocomplete("autocompletelist", ad);
+        }
     }
-
-    if (layout_checkhightligh.Checked)
-     return "http://www.twitch.tv/" + getName() + "/c/" + layout_boxVOD.Text + append;
-    else
-     return "http://www.twitch.tv/" + getName() + "/b/" + layout_boxVOD.Text + append;
-   }
-  }
-
-  public string[] getQuality()
-  {
-   return new string[]{
-    "best",
-    "high",
-    "medium",
-    "low",
-    "worst"
-   };
-  }
-
-  public string getPluginId()
-  {
-   return "stock::twitchtv";
-  }
-
-  MainFormInfo local_mfi;
-
-  TabPage layout_mtp;
-  Label layout_labelChannel,
-          layout_labelVOD,
-          layout_labelTime,
-          layout_labelh,
-          layout_labelm,
-          layout_labels;
-  TextBox layout_boxChannel,
-          layout_boxVOD;
-  NumericUpDown layout_numHour,
-                layout_numMinute,
-                layout_numSecond;
-  CheckBox layout_checkhightligh;
-
-  public void setUpTab(MainFormInfo mfi)
-  {
-   local_mfi = mfi;
-
-   // tworzenie
-   layout_mtp = new TabPage("twitch.tv");
-   layout_labelChannel = new Label();
-   layout_boxChannel = new TextBox();
-   layout_labelVOD = new Label();
-   layout_boxVOD = new TextBox();
-   layout_labelTime = new Label();
-   layout_numHour = new NumericUpDown();
-   layout_numMinute = new NumericUpDown();
-   layout_numSecond = new NumericUpDown();
-   layout_labelh = new Label();
-   layout_labelm = new Label();
-   layout_labels = new Label();
-   layout_checkhightligh = new CheckBox();
-
-   // inicjalizacja
-   layout_labelChannel.Text = "Channel Name:";
-   layout_labelChannel.Location = new System.Drawing.Point(3, 10);
-   layout_labelChannel.Size = new System.Drawing.Size(81, 20);
-
-   layout_boxChannel.Location = new System.Drawing.Point(85, 7);
-   layout_boxChannel.Size = new System.Drawing.Size(275, 20);
-   layout_boxChannel.TextChanged += evenChanger;
-
-   layout_labelVOD.Text = "VOD:";
-   layout_labelVOD.Location = new System.Drawing.Point(3, 35);
-   layout_labelVOD.Size = new System.Drawing.Size(81, 20);
-
-   layout_boxVOD.Location = new System.Drawing.Point(85, 30);
-   layout_boxVOD.Size = new System.Drawing.Size(275, 20);
-   layout_boxVOD.TextChanged += evenChanger;
-
-   layout_labelTime.Text = "Start Time:";
-   layout_labelTime.Location = new System.Drawing.Point(3, 60);
-   layout_labelTime.Size = new System.Drawing.Size(81, 20);
-
-   layout_numHour.Minimum = 0;
-   layout_numHour.Maximum = 24 * 5;
-   layout_numHour.Location = new System.Drawing.Point(85, 55);
-   layout_numHour.Size = new System.Drawing.Size(50, 20);
-   layout_numHour.ValueChanged += evenChanger;
-
-   layout_labelh.Text = "h";
-   layout_labelh.Location = new System.Drawing.Point(140, 60);
-   layout_labelh.Size = new System.Drawing.Size(10, 20);
-
-   layout_numMinute.Minimum = 0;
-   layout_numMinute.Maximum = 1000;
-   layout_numMinute.Location = new System.Drawing.Point(155, 55);
-   layout_numMinute.Size = new System.Drawing.Size(50, 20);
-   layout_numMinute.ValueChanged += evenChanger;
-
-   layout_labelm.Text = "m";
-   layout_labelm.Location = new System.Drawing.Point(210, 60);
-   layout_labelm.Size = new System.Drawing.Size(10, 20);
-
-   layout_numSecond.Minimum = 0;
-   layout_numSecond.Maximum = 1000;
-   layout_numSecond.Location = new System.Drawing.Point(225, 55);
-   layout_numSecond.Size = new System.Drawing.Size(50, 20);
-   layout_numSecond.ValueChanged += evenChanger;
-
-   layout_labels.Text = "s";
-   layout_labels.Location = new System.Drawing.Point(280, 60);
-   layout_labels.Size = new System.Drawing.Size(10, 20);
-
-   layout_checkhightligh.Location = new System.Drawing.Point(3, 75);
-   layout_checkhightligh.CheckedChanged += evenChanger;
-   layout_checkhightligh.Text = "Is highlight: ";
-   layout_checkhightligh.CheckAlign = System.Drawing.ContentAlignment.MiddleRight;
-
-   // dodawanie do komponentów
-   layout_mtp.Controls.AddRange(
-    new Control[]{ layout_labelChannel,
-                   layout_boxChannel,
-                   layout_labelVOD,
-                   layout_boxVOD,
-                   layout_labelTime,
-                   layout_numHour,
-                   layout_numMinute,
-                   layout_numSecond,
-                   layout_labelh,
-                   layout_labelm,
-                   layout_labels,
-                   layout_checkhightligh
-    });
-
-   // dodwanie taba
-   mfi.tabControl.TabPages.Add(layout_mtp);
-  }
-
-  private void evenChanger(object sender, System.EventArgs e)
-  {
-   local_mfi.generateUpdateEvent(getPluginId());
-  }
-
-  string stream_title = "";
-  string stream_author = "";
-
-  public void queryAdditionalData()
-  {
-   string apiSite = "https://api.twitch.tv/kraken/channels/" + getName();
-
-   WebRequest wr = WebRequest.Create(apiSite);
-   WebResponse wre = wr.GetResponse();
-   Stream data = wre.GetResponseStream();
-
-   string html = string.Empty;
-   using ( StreamReader sr = new StreamReader(data))
-   {
-    html = sr.ReadToEnd();
-   }
-   data.Close();
-
-   JavaScriptSerializer jss = new JavaScriptSerializer();
-   var dict = jss.Deserialize<Dictionary<string, object>>(html);
-
-   stream_author = (string)dict["display_name"];
-   stream_title = "Playing: " + (string)dict["game"] + " - " + (string)dict["status"];
-  }
- }
 }
