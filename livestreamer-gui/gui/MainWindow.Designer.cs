@@ -40,8 +40,6 @@
             this.label1 = new System.Windows.Forms.Label();
             this.btnChoosePlayerPath = new System.Windows.Forms.Button();
             this.btnChooseLivestreamerPath = new System.Windows.Forms.Button();
-            this.btnConfigurationData = new System.Windows.Forms.Button();
-            this.btnAutocompleteData = new System.Windows.Forms.Button();
             this.cbxAllowInternetApiAccess = new System.Windows.Forms.CheckBox();
             this.cbxVlcMetadata = new System.Windows.Forms.CheckBox();
             this.cbxHideConsole = new System.Windows.Forms.CheckBox();
@@ -120,8 +118,6 @@
             this.tabPage1.Controls.Add(this.label1);
             this.tabPage1.Controls.Add(this.btnChoosePlayerPath);
             this.tabPage1.Controls.Add(this.btnChooseLivestreamerPath);
-            this.tabPage1.Controls.Add(this.btnConfigurationData);
-            this.tabPage1.Controls.Add(this.btnAutocompleteData);
             this.tabPage1.Controls.Add(this.cbxAllowInternetApiAccess);
             this.tabPage1.Controls.Add(this.cbxVlcMetadata);
             this.tabPage1.Controls.Add(this.cbxHideConsole);
@@ -183,24 +179,6 @@
             this.btnChooseLivestreamerPath.Text = "...";
             this.btnChooseLivestreamerPath.UseVisualStyleBackColor = true;
             this.btnChooseLivestreamerPath.Click += new System.EventHandler(this.btnChooseLivestreamerPath_Click);
-            // 
-            // btnConfigurationData
-            // 
-            this.btnConfigurationData.Location = new System.Drawing.Point(209, 264);
-            this.btnConfigurationData.Name = "btnConfigurationData";
-            this.btnConfigurationData.Size = new System.Drawing.Size(186, 23);
-            this.btnConfigurationData.TabIndex = 8;
-            this.btnConfigurationData.Text = "Configuration Data";
-            this.btnConfigurationData.UseVisualStyleBackColor = true;
-            // 
-            // btnAutocompleteData
-            // 
-            this.btnAutocompleteData.Location = new System.Drawing.Point(11, 264);
-            this.btnAutocompleteData.Name = "btnAutocompleteData";
-            this.btnAutocompleteData.Size = new System.Drawing.Size(192, 23);
-            this.btnAutocompleteData.TabIndex = 7;
-            this.btnAutocompleteData.Text = "Autocomplete Data";
-            this.btnAutocompleteData.UseVisualStyleBackColor = true;
             // 
             // cbxAllowInternetApiAccess
             // 
@@ -398,8 +376,6 @@
         private System.Windows.Forms.ComboBox cbLogLevel;
         private System.Windows.Forms.TextBox tbPlayerPath;
         private System.Windows.Forms.TextBox tbLivestreamerPath;
-        private System.Windows.Forms.Button btnConfigurationData;
-        private System.Windows.Forms.Button btnAutocompleteData;
         private System.Windows.Forms.CheckBox cbxAllowInternetApiAccess;
         private System.Windows.Forms.CheckBox cbxVlcMetadata;
         private System.Windows.Forms.CheckBox cbxHideConsole;
