@@ -10,7 +10,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("RGB Lighthouse")]
 [assembly: AssemblyProduct("livestreamer-gui")]
-[assembly: AssemblyCopyright("(c) 2014 Andrzej Budzanowski")]
+[assembly: AssemblyCopyright("(c) 2014 - 2016 Andrzej Budzanowski")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
@@ -33,4 +33,4 @@ using System.Runtime.InteropServices;
 // by using the '*' as shown below:
 // [assembly: AssemblyVersion("1.0.*")]
 [assembly: AssemblyVersion("3.0.0.0")]
-[assembly: AssemblyFileVersion("3.0.0.0")]
+[assembly: AssemblyFileVersion("3.0.0.1")]

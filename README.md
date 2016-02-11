@@ -10,5 +10,8 @@ For license google GPLv2 or look at LICENSE file
 Check the release github page
 
 ## Changelog
+### 3.0.0.1
+ * Changed icon, so now it looks nicer.
+
 ### 3.0
  * Complete rewrite, because of reasons.
