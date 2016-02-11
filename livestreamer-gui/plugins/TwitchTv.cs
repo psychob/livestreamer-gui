@@ -22,7 +22,6 @@ namespace livestreamer_gui.plugins
             layoutLabelH, layoutLabelM, layoutLabelS;
         TextBox layoutTextBoxChannel, layoutTextBoxVOD;
         NumericUpDown layoutNudHour, layoutNudMinute, layoutNudSecond;
-        CheckBox layoutCheckBoxIsHighlight;
         InitData localInitData;
         List<ConfigurationDatabase.AutocompleteData> ad;
 
@@ -58,6 +57,11 @@ namespace livestreamer_gui.plugins
         public StreamInfo GetVideoMedatada()
         {
             StreamInfo retInfo = new StreamInfo();
+
+            retInfo.Author = StreamName;
+            retInfo.Title = "Stream of " + StreamName;
+            retInfo.CanonicalUrl = GetCanonicalUrl();
+            retInfo.OptionsPassedToLivestreamer = "";
 
             if (localInitData.Config.GetBoolean(ConfigurationConstants.ApiInternetAccess,
                 true, false))
@@ -110,14 +114,21 @@ namespace livestreamer_gui.plugins
 
                 }
             }
-            else
-            {
-                retInfo.Author = StreamName;
-                retInfo.Title = "Stream of " + StreamName;
-                retInfo.CanonicalUrl = GetCanonicalUrl();
-            }
 
             return retInfo;
+        }
+
+
+        public string[] GetCanonicalQuality()
+        {
+            return new string[]
+            {
+                "best",
+                "high",
+                "medium",
+                "low",
+                "worst",
+            };
         }
 
         public string GetCanonicalUrl()
@@ -151,6 +162,8 @@ namespace livestreamer_gui.plugins
             localInitData = data;
 
             ad = localInitData.Config.GetAutocomplete("autocompletelist");
+            if (ad == null)
+                ad = new List<ConfigurationDatabase.AutocompleteData>();
 
             // tworzenie
             layoutTabPage = new TabPage("twitch.tv");
@@ -165,7 +178,6 @@ namespace livestreamer_gui.plugins
             layoutLabelH = new Label();
             layoutLabelM = new Label();
             layoutLabelS = new Label();
-            layoutCheckBoxIsHighlight = new CheckBox();
 
             // inicjalizacja
             layoutLabelChannelName.Text = "Channel Name:";
@@ -179,7 +191,7 @@ namespace livestreamer_gui.plugins
             layoutTextBoxChannel.AutoCompleteSource = AutoCompleteSource.CustomSource;
             layoutTextBoxChannel.AutoCompleteCustomSource = new AutoCompleteStringCollection();
 
-            if (ad != null)
+            if (ad != null && ad.Count > 0)
                 layoutTextBoxChannel.AutoCompleteCustomSource.AddRange(ad.Rewrite(r => r.url));
 
             layoutLabelVOD.Text = "VOD:";
@@ -224,12 +236,6 @@ namespace livestreamer_gui.plugins
             layoutLabelS.Location = new System.Drawing.Point(332, 63);
             layoutLabelS.Size = new System.Drawing.Size(10, 20);
 
-            layoutCheckBoxIsHighlight.Location = new System.Drawing.Point(7, 85);
-            layoutCheckBoxIsHighlight.Size = new System.Drawing.Size(160, 20);
-            layoutCheckBoxIsHighlight.CheckedChanged += evenChanger;
-            layoutCheckBoxIsHighlight.Text = "Is highlight: ";
-            layoutCheckBoxIsHighlight.CheckAlign = System.Drawing.ContentAlignment.MiddleRight;
-
             // dodawanie do komponentów
             layoutTabPage.Controls.AddRange(
              new Control[]{ layoutLabelChannelName,
@@ -243,7 +249,6 @@ namespace livestreamer_gui.plugins
                    layoutLabelH,
                    layoutLabelM,
                    layoutLabelS,
-                   layoutCheckBoxIsHighlight
              });
 
             // dodwanie taba
@@ -274,7 +279,6 @@ namespace livestreamer_gui.plugins
             layoutNudMinute.Value = 0;
             layoutNudHour.Value = 0;
             layoutNudSecond.Value = 0;
-            layoutCheckBoxIsHighlight.Checked = false;
 
             // nie ma żadnej dodatkowej informacji
             if (next_q == -1)

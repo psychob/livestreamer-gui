@@ -13,10 +13,10 @@ namespace livestreamer_gui
 {
     public struct StreamInfo
     {
-        public List<string> Quality;
         public string Title;
         public string Author;
         public string CanonicalUrl;
+        public string OptionsPassedToLivestreamer;
     }
 
     public struct InitData
@@ -38,6 +38,8 @@ namespace livestreamer_gui
         bool Owns(Uri url);
 
         string GetCanonicalUrl();
+
+        string[] GetCanonicalQuality();
 
         StreamInfo GetVideoMedatada();
 

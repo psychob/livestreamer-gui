@@ -8,7 +8,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyTitle("livestreamer-gui")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("Andrzej Budzanowski")]
+[assembly: AssemblyCompany("RGB Lighthouse")]
 [assembly: AssemblyProduct("livestreamer-gui")]
 [assembly: AssemblyCopyright("(c) 2014 Andrzej Budzanowski")]
 [assembly: AssemblyTrademark("")]

@@ -93,5 +93,29 @@ namespace livestreamer_gui
         {
             xml.WriteEndElement();
         }
+
+        public static string GetUserPath()
+        {
+            return System.IO.Directory.GetParent(System.Windows.Forms.Application.UserAppDataPath).FullName;
+        }
+
+        public static string Escape(this string str)
+        {
+            return '"' + str.EscapeWithout() + '"';
+        }
+
+        public static string EscapeWithout(this string str)
+        {
+            return str.Replace("\"", "\\\"");
+        }
+
+        public static int IndexOf<T>(this T[] val, T item)
+        {
+            for (int it = 0; it < val.Length; ++it)
+                if (val[it].Equals(item))
+                    return it;
+
+            return -1;
+        }
     }
 }

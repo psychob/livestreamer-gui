@@ -7,7 +7,9 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
+using System.Diagnostics;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -22,17 +24,120 @@ namespace livestreamer_gui.gui
         string currentPlugin;
         List<ConfigurationDatabase.AutocompleteData> ad;
 
+        public string LivestreamerPath
+        {
+            get
+            {
+                return tbLivestreamerPath.Text;
+            }
+        }
+
+        public string PlayerPath
+        {
+            get
+            {
+                return tbPlayerPath.Text;
+            }
+        }
+
+        public string CurrentUrl
+        {
+            get
+            {
+                return tbOutputUrl.Text;
+            }
+        }
+
+        public bool GenerateVLC
+        {
+            get
+            {
+                return cbxVlcMetadata.Checked;
+            }
+        }
+
+        public string CurrentQuality
+        {
+            get
+            {
+                if (cbQualityBox.SelectedIndex == -1)
+                    return "best,worst";
+                else
+                    return (string)cbQualityBox.Items[cbQualityBox.SelectedIndex];
+            }
+        }
+
+        public string[] Qualitys
+        {
+            get
+            {
+                return cbQualityBox.Items.Cast<string>().ToArray();
+            }
+
+            set
+            {
+                if (cbQualityBox.SelectedIndex == -1 )
+                {
+                    cbQualityBox.Items.Clear();
+                    cbQualityBox.Items.AddRange(value);
+                }
+                else
+                {
+                    string current_quality = (string)cbQualityBox.Items[cbQualityBox.SelectedIndex];
+                    int index = value.IndexOf(current_quality);
+
+                    cbQualityBox.Items.Clear();
+                    cbQualityBox.Items.AddRange(value);
+
+                    cbQualityBox.SelectedIndex = index;
+                }
+            }
+        }
+
+        public bool RetryStream
+        {
+            get
+            {
+                return cbxRetryStream.Checked;
+            }
+        }
+
+        public int NumberOfAttempts
+        {
+            get
+            {
+                return Convert.ToInt32(nudRetryAttempts.Value);
+            }
+        }
+
+        public int DelayBetween
+        {
+            get
+            {
+                return Convert.ToInt32(nudRetryDelay.Value);
+            }
+        }
+
+        public bool HideConsole
+        {
+            get
+            {
+                return cbxHideConsole.Checked;
+            }
+        }
+
         public MainWindow()
         {
             InitializeComponent();
 
-            cfgDatabase.LoadConfiguration("./livestreamer-v3.xml");
+            cfgDatabase.LoadConfiguration(Path.Combine(ExtenstionMethods.GetUserPath(),
+                "livestreamer.xml"));
 
             apis = new PluginAPI[]
             {
                 new plugins.TwitchTv(),
                 new plugins.YouTubeCom(),
-                new plugins.GenericDotCom(),
+                new plugins.GenericPage(),
             };
 
             foreach ( var it in apis )
@@ -98,7 +203,8 @@ namespace livestreamer_gui.gui
 
             cfgDatabase.SetAutocomplete(ConfigurationConstants.Autocomplete, ad);
 
-            cfgDatabase.SaveConfiguration("./livestreamer-v3.xml");
+            cfgDatabase.SaveConfiguration(Path.Combine(ExtenstionMethods.GetUserPath(),
+                "livestreamer.xml"));
         }
 
         private void apiRunLiveStreamer()
@@ -119,6 +225,8 @@ namespace livestreamer_gui.gui
 
             var metadata = current.GetVideoMedatada();
 
+            RunLivestreamer(metadata);
+
             current.StreamStarted();
 
             int io = ad.FindIndex(p => p.url == metadata.CanonicalUrl);
@@ -135,11 +243,63 @@ namespace livestreamer_gui.gui
             tbInputUrl.AutoCompleteCustomSource.AddRange(ad.Rewrite(r => r.url));
         }
 
+        private void RunLivestreamer(StreamInfo metadata)
+        {
+            string outputCommand = "", arguments = "";
+            Process processToRun = new Process();
+
+            processToRun.StartInfo.FileName = LivestreamerPath;
+            outputCommand += LivestreamerPath.Escape();
+
+            if (HideConsole)
+                processToRun.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
+
+            if (PlayerPath.Length > 0) // customowy player
+                arguments += "--player " + PlayerPath.Escape() + " ";
+
+            if (cbLogLevel.SelectedIndex != -1)
+                arguments += "--loglevel=" + (string)cbLogLevel.SelectedItem + ' ';
+
+            if (GenerateVLC)
+            {
+                string playeropts = "";
+
+                playeropts += "--meta-title=" + metadata.Title.Escape() + ' ';
+                playeropts += "--meta-author=" + metadata.Author.Escape() + ' ';
+                playeropts += "--meta-artist=" + metadata.Author.Escape() + ' ';
+                playeropts += "{filename}";
+
+                arguments += "--player-args=" + playeropts.Escape() + ' ';
+
+                //arguments += "--player-passthrough=hls ";
+            }
+
+            if (RetryStream)
+            {
+                // --retry-open 1000 --retry-streams 2
+                arguments += "--retry-open " + NumberOfAttempts.ToString() + ' ';
+                arguments += "--retry-streams " + DelayBetween.ToString() + ' ';
+            }
+
+            if (metadata.OptionsPassedToLivestreamer.Length > 0)
+                arguments += metadata.OptionsPassedToLivestreamer + ' ';
+
+            // na końcu link + jakość
+            arguments += metadata.CanonicalUrl.Escape() + " " + CurrentQuality.Escape();
+
+            processToRun.StartInfo.Arguments = arguments;
+            tbOutputCommand.Text = outputCommand + " " + arguments;
+
+            processToRun.Start();
+        }
+
         private void apiUpdatedTab(string id)
         {
             currentPlugin = id;
+            PluginAPI curr = GetCurrentPlugin();
 
-            tbOutputUrl.Text = GetCurrentPlugin().GetCanonicalUrl();
+            tbOutputUrl.Text = curr.GetCanonicalUrl();
+            Qualitys = curr.GetCanonicalQuality();
         }
 
         private PluginAPI GetCurrentPlugin()
