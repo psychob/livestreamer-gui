@@ -1,143 +1,157 @@
 ﻿//
 // livestreamer-gui
-// (c) 2014 Andrzej Budzanowski <psychob.pl@gmail.com>
-//
-// This program is free software; you can redistribute it and/or modify
-// it under the terms of the GNU General Public License as published by
-// the Free Software Foundation; either version 2 of the License, or
-// any later version.
-//
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
-//
-// You should have received a copy of the GNU General Public License along
-// with this program; if not, write to the Free Software Foundation, Inc.,
-// 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+// (c) 2014 - 2016 Andrzej Budzanowski <psychob.pl@gmail.com>
 //
 
 using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Net;
+using System.Text;
+using System.Threading.Tasks;
 using System.Web;
 using System.Windows.Forms;
 
 namespace livestreamer_gui.plugins
 {
- class YouTubeCom : WebsiteAPI
- {
-  public bool isMyUri(System.Uri url)
-  {
-   if ( url.Host == "youtube.com" || url.Host == "www.youtube.com" )
-   {
-    var urlq = HttpUtility.ParseQueryString(url.Query);
-    layout_boxVideo.Text = urlq["v"];
-    return true;
-   } else if ( url.Host == "youtu.be" )
-   {
-    layout_boxVideo.Text = url.Segments[1];
-    return true;
-   }
+    class YouTubeCom : PluginAPI
+    {
+        string currentVideoId
+        {
+            get
+            {
+                return layoutTextBoxVideoId.Text.Trim();
+            }
 
-   return false;
-  }
+            set
+            {
+                layoutTextBoxVideoId.Text = value.Trim();
+            }
+        }
 
-  public string getStreamTitle()
-  {
-   return video_name;
-  }
+        TabPage layoutTabPage;
+        Label layoutLabelVideoId;
+        TextBox layoutTextBoxVideoId;
+        InitData localInitData;
 
-  public string getStreamAuthor()
-  {
-   return artist_name;
-  }
+        public string GetPluginId()
+        {
+            return "youtube";
+        }
 
-  public string getCanonicalUrl()
-  {
-   return "http://www.youtube.com/watch?v=" + layout_boxVideo.Text;
-  }
+        public StreamInfo GetVideoMedatada()
+        {
+            StreamInfo sinfo = new StreamInfo();
 
-  public string[] getQuality()
-  {
-   return new string[]{
-    "best",
-    "1080p",
-    "720p",
-    "480p",
-    "360p",
-    "260p",
-    "worst"
-   };
-  }
+            try
+            {
+                // pobieramy informacje o video
+                string yt_url = GetCanonicalUrl();
+                string oembed = "http://www.youtube.com/oembed";
 
-  public string getPluginId()
-  {
-   return "stock::youtube";
-  }
+                {
+                    var qstr = HttpUtility.ParseQueryString(string.Empty);
+                    qstr["url"] = yt_url;
+                    qstr["format"] = "xml";
 
-  MainFormInfo local_mfi;
+                    oembed += "?" + qstr.ToString();
+                }
 
-  TabPage layout_tab;
+                WebRequest wr = WebRequest.Create(oembed);
+                WebResponse wre = wr.GetResponse();
+                Stream data = wre.GetResponseStream();
 
-  Label layout_labelVideo;
-  TextBox layout_boxVideo;
+                System.Xml.XmlDocument xmldoc = new System.Xml.XmlDocument();
+                xmldoc.Load(data);
+                data.Close();
 
-  public void setUpTab(MainFormInfo mfi)
-  {
-   local_mfi = mfi;
+                sinfo.Author = xmldoc.GetElementsByTagName("author_name")[0].InnerText;
+                sinfo.Title = xmldoc.GetElementsByTagName("title")[0].InnerText;
+                sinfo.CanonicalUrl = GetCanonicalUrl();
+            }
+            catch (Exception)
+            {
+                sinfo.Author = "Unknown author";
+                sinfo.Title = "Unknown title";
+                sinfo.CanonicalUrl = GetCanonicalUrl();
+            }
 
-   layout_tab = new TabPage("youtube.com");
+            return sinfo;
+        }
 
-   layout_labelVideo = new Label();
-   layout_boxVideo = new TextBox();
+        public string GetCanonicalUrl()
+        {
+            return "http://www.youtube.com/watch?v=" + currentVideoId;
+        }
 
-   layout_labelVideo.Text = "Video ID:";
-   layout_labelVideo.Location = new System.Drawing.Point(3, 10);
-   layout_labelVideo.Size = new System.Drawing.Size(81, 20);
+        public void InitTab(InitData data)
+        {
+            localInitData = data;
 
-   layout_boxVideo.Location = new System.Drawing.Point(85, 7);
-   layout_boxVideo.Size = new System.Drawing.Size(295, 20);
-   layout_boxVideo.TextChanged += eventChanger;
+            layoutTabPage = new TabPage("youtube.com");
+            layoutLabelVideoId = new Label();
+            layoutTextBoxVideoId = new TextBox();
 
-   layout_tab.Controls.Add(layout_labelVideo);
-   layout_tab.Controls.Add(layout_boxVideo);
+            layoutLabelVideoId.Text = "Video ID:";
+            layoutLabelVideoId.Location = new System.Drawing.Point(8, 9);
+            layoutLabelVideoId.Size = new System.Drawing.Size(81, 20);
 
-   mfi.tabControl.TabPages.Add(layout_tab);
-  }
+            layoutTextBoxVideoId.Location = new System.Drawing.Point(152, 6);
+            layoutTextBoxVideoId.Size = new System.Drawing.Size(243, 20);
+            layoutTextBoxVideoId.TextChanged += evenChanger;
 
-  private void eventChanger(object sender, System.EventArgs e)
-  {
-   local_mfi.generateUpdateEvent(getPluginId());
-  }
+            layoutTabPage.Controls.AddRange(
+              new Control[]{ layoutLabelVideoId,
+                   layoutTextBoxVideoId,
+              });
 
-  string artist_name = "unknown";
-  string video_name = "unknown";
+            // dodwanie taba
+            localInitData.Control.TabPages.Add(layoutTabPage);
+        }
 
-  public void queryAdditionalData()
-  {
-   // pobieramy informacje o video
-   string yt_url = getCanonicalUrl();
-   string oembed = "http://www.youtube.com/oembed";
+        private void evenChanger(object sender, EventArgs e)
+        {
+            localInitData.TabUpdated(GetPluginId());
+        }
 
-   {
-    var qstr = HttpUtility.ParseQueryString(string.Empty);
-    qstr["url"] = getCanonicalUrl();
-    qstr["format"] = "xml";
+        public bool Owns(Uri url)
+        {
+            if (url.Host == "youtube.com" || url.Host == "www.youtube.com")
+            {
+                var urlq = HttpUtility.ParseQueryString(url.Query);
+                currentVideoId = urlq["v"];
+                return true;
+            }
+            else if (url.Host == "youtu.be")
+            {
+                currentVideoId = url.Segments[1];
+                return true;
+            }
 
-    oembed += "?" + qstr.ToString();
-   }
+            return false;
+        }
 
-   WebRequest wr = WebRequest.Create(oembed);
-   WebResponse wre = wr.GetResponse();
-   Stream data = wre.GetResponseStream();
+        public void StreamStarted()
+        {
+        }
 
-   System.Xml.XmlDocument xmldoc = new System.Xml.XmlDocument();
-   xmldoc.Load(data);
-   data.Close();
+        public void ShutDown()
+        {
+        }
 
-   artist_name = xmldoc.GetElementsByTagName("author_name")[0].InnerText;
-   video_name = xmldoc.GetElementsByTagName("title")[0].InnerText;
-  }
- }
+        public string[] GetCanonicalQuality()
+        {
+            return new string[]
+            {
+                "best",
+                "1080p",
+                "720p",
+                "480p",
+                "360p",
+                "260p",
+                "worst"
+            };
+        }
+    }
 }

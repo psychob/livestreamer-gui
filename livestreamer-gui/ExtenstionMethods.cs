@@ -117,5 +117,10 @@ namespace livestreamer_gui
 
             return -1;
         }
+
+        public static bool IsEmpty(this string str)
+        {
+            return str == null || str.Length == 0;
+        }
     }
 }

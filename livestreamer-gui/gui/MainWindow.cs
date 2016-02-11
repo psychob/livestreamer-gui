@@ -281,7 +281,7 @@ namespace livestreamer_gui.gui
                 arguments += "--retry-streams " + DelayBetween.ToString() + ' ';
             }
 
-            if (metadata.OptionsPassedToLivestreamer.Length > 0)
+            if (!metadata.OptionsPassedToLivestreamer.IsEmpty())
                 arguments += metadata.OptionsPassedToLivestreamer + ' ';
 
             // na końcu link + jakość
