@@ -26,7 +26,10 @@ namespace livestreamer_gui.plugins
 
             set
             {
-                layoutTextBoxVideoId.Text = value.Trim();
+                if (value == null)
+                    layoutTextBoxVideoId.Text = "";
+                else
+                    layoutTextBoxVideoId.Text = value.Trim();
             }
         }
 
@@ -44,37 +47,44 @@ namespace livestreamer_gui.plugins
         {
             StreamInfo sinfo = new StreamInfo();
 
-            try
-            {
-                // pobieramy informacje o video
-                string yt_url = GetCanonicalUrl();
-                string oembed = "http://www.youtube.com/oembed";
+            sinfo.Author = GetCanonicalUrl();
+            sinfo.Title = GetCanonicalUrl();
 
+            if (localInitData.Config.GetBoolean(ConfigurationConstants.ApiInternetAccess,
+                true, false))
+            {
+                try
                 {
-                    var qstr = HttpUtility.ParseQueryString(string.Empty);
-                    qstr["url"] = yt_url;
-                    qstr["format"] = "xml";
+                    // pobieramy informacje o video
+                    string yt_url = GetCanonicalUrl();
+                    string oembed = "http://www.youtube.com/oembed";
 
-                    oembed += "?" + qstr.ToString();
+                    {
+                        var qstr = HttpUtility.ParseQueryString(string.Empty);
+                        qstr["url"] = yt_url;
+                        qstr["format"] = "xml";
+
+                        oembed += "?" + qstr.ToString();
+                    }
+
+                    WebRequest wr = WebRequest.Create(oembed);
+                    WebResponse wre = wr.GetResponse();
+                    Stream data = wre.GetResponseStream();
+
+                    System.Xml.XmlDocument xmldoc = new System.Xml.XmlDocument();
+                    xmldoc.Load(data);
+                    data.Close();
+
+                    sinfo.Author = xmldoc.GetElementsByTagName("author_name")[0].InnerText;
+                    sinfo.Title = xmldoc.GetElementsByTagName("title")[0].InnerText;
+                    sinfo.CanonicalUrl = GetCanonicalUrl();
                 }
-
-                WebRequest wr = WebRequest.Create(oembed);
-                WebResponse wre = wr.GetResponse();
-                Stream data = wre.GetResponseStream();
-
-                System.Xml.XmlDocument xmldoc = new System.Xml.XmlDocument();
-                xmldoc.Load(data);
-                data.Close();
-
-                sinfo.Author = xmldoc.GetElementsByTagName("author_name")[0].InnerText;
-                sinfo.Title = xmldoc.GetElementsByTagName("title")[0].InnerText;
-                sinfo.CanonicalUrl = GetCanonicalUrl();
-            }
-            catch (Exception)
-            {
-                sinfo.Author = "Unknown author";
-                sinfo.Title = "Unknown title";
-                sinfo.CanonicalUrl = GetCanonicalUrl();
+                catch (Exception)
+                {
+                    sinfo.Author = "Unknown author";
+                    sinfo.Title = "Unknown title";
+                    sinfo.CanonicalUrl = GetCanonicalUrl();
+                }
             }
 
             return sinfo;
@@ -125,8 +135,11 @@ namespace livestreamer_gui.plugins
             }
             else if (url.Host == "youtu.be")
             {
-                currentVideoId = url.Segments[1];
-                return true;
+                if (url.Segments.Length >= 2)
+                {
+                    currentVideoId = url.Segments[1];
+                    return true;
+                }
             }
 
             return false;
