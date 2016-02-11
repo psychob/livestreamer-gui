@@ -1,101 +1,103 @@
-﻿//
-// livestreamer-gui
-// (c) 2014 Andrzej Budzanowski <psychob.pl@gmail.com>
-//
-// This program is free software; you can redistribute it and/or modify
-// it under the terms of the GNU General Public License as published by
-// the Free Software Foundation; either version 2 of the License, or
-// any later version.
-//
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
-//
-// You should have received a copy of the GNU General Public License along
-// with this program; if not, write to the Free Software Foundation, Inc.,
-// 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
-//
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace livestreamer_gui.plugins
 {
- class GenericPage : WebsiteAPI
- {
-  public bool isMyUri(System.Uri url)
-  {
-   layout_tbPageUrl.Text = url.ToString();
-   return true;
-  }
+    class GenericPage : PluginAPI
+    {
+        string currentUrl
+        {
+            get
+            {
+                return layoutTextBoxVideoId.Text.Trim();
+            }
 
-  public string getStreamTitle()
-  {
-   return "not supported!";
-  }
+            set
+            {
+                layoutTextBoxVideoId.Text = value.Trim();
+            }
+        }
 
-  public string getStreamAuthor()
-  {
-   return "not supported!";
-  }
+        TabPage layoutTabPage;
+        Label layoutLabelVideoId;
+        TextBox layoutTextBoxVideoId;
+        InitData localInitData;
 
-  public string getCanonicalUrl()
-  {
-   return layout_tbPageUrl.Text;
-  }
+        public string[] GetCanonicalQuality()
+        {
+            return new string[]
+            {
+                "best",
+                "worst",
+            };
+        }
 
-  public string[] getQuality()
-  {
-   return new string[]{
-    "best",
-    "worst"
-   };
-  }
+        public string GetCanonicalUrl()
+        {
+            return currentUrl;
+        }
 
-  public string getPluginId()
-  {
-   return "stock::generic";
-  }
+        public string GetPluginId()
+        {
+            return "generic";
+        }
 
-  MainFormInfo local_mfi;
+        public StreamInfo GetVideoMedatada()
+        {
+            StreamInfo sinfo = new StreamInfo();
 
-  TabPage layout_ctp;
-  TextBox layout_tbPageUrl;
-  Label   layout_lbPage;
+            sinfo.Author = currentUrl;
+            sinfo.Title = currentUrl;
 
-  public void setUpTab(MainFormInfo mfi)
-  {
-   local_mfi = mfi;
-   layout_ctp = new TabPage("Any Page");
+            return sinfo;
+        }
 
-   layout_tbPageUrl = new TextBox();
-   layout_lbPage = new Label();
+        public void InitTab(InitData data)
+        {
+            localInitData = data;
 
-   layout_lbPage.Text = "Site with stream url:";
-   layout_lbPage.Location = new System.Drawing.Point(3, 10);
+            layoutTabPage = new TabPage("Generic Page");
+            layoutLabelVideoId = new Label();
+            layoutTextBoxVideoId = new TextBox();
 
-   layout_tbPageUrl.Location = new System.Drawing.Point(115, 6);
-   layout_tbPageUrl.Size = new System.Drawing.Size(246, 20);
-   layout_tbPageUrl.TextChanged += layout_tbPageUrl_TextChanged;
-   layout_tbPageUrl.KeyDown += layout_tbPageUrl_KeyDown;
+            layoutLabelVideoId.Text = "Url:";
+            layoutLabelVideoId.Location = new System.Drawing.Point(8, 9);
+            layoutLabelVideoId.Size = new System.Drawing.Size(81, 20);
 
-   layout_ctp.Controls.AddRange(new Control[]{ layout_lbPage, layout_tbPageUrl});
+            layoutTextBoxVideoId.Location = new System.Drawing.Point(152, 6);
+            layoutTextBoxVideoId.Size = new System.Drawing.Size(243, 20);
+            layoutTextBoxVideoId.TextChanged += evenChanger;
 
-   mfi.tabControl.TabPages.Add(layout_ctp);
-  }
+            layoutTabPage.Controls.AddRange(
+              new Control[]{ layoutLabelVideoId,
+                   layoutTextBoxVideoId,
+              });
 
-  void layout_tbPageUrl_KeyDown(object sender, KeyEventArgs e)
-  {
-   if (e.KeyCode == Keys.Return)
-    local_mfi.generateRunEvent();
-  }
+            // dodwanie taba
+            localInitData.Control.TabPages.Add(layoutTabPage);
+        }
 
-  void layout_tbPageUrl_TextChanged(object sender, System.EventArgs e)
-  {
-   local_mfi.generateUpdateEvent(getPluginId());
-  }
+        private void evenChanger(object sender, EventArgs e)
+        {
+            localInitData.TabUpdated(GetPluginId());
+        }
 
-  public void queryAdditionalData()
-  { // nic
-  }
- }
+        public bool Owns(Uri url)
+        {
+            currentUrl = url.ToString();
+            return true;
+        }
+
+        public void ShutDown()
+        {
+        }
+
+        public void StreamStarted()
+        {
+        }
+    }
 }
