@@ -212,11 +212,17 @@ namespace livestreamer_gui
 
         public void SetAutocomplete(string newKey, List<AutocompleteData> ad)
         {
+            if (ad == null)
+                return;
+
             values[newKey] = new ConfigValue(ad);
         }
 
         public void SetListOfStrings(string key, List<string> list)
         {
+            if (list == null)
+                return;
+
             values[key] = new ConfigValue(list);
         }
 
@@ -323,11 +329,15 @@ namespace livestreamer_gui
                             break;
 
                         case ConfigValue.Type.ListOfStrings:
+                            List<string> lst = (List<string>)it.Value.boxedValue;
+
+                            if (lst.Count == 0)
+                                break;
+
                             xmlw.StartTag("stringlist",
                                 new Dictionary<string, string>{
                                     { "name", it.Key }
                                 });
-                            List<string> lst = (List<string>)it.Value.boxedValue;
 
                             foreach (var jt in lst)
                                 xmlw.WriteTag("string", jt);
@@ -336,11 +346,15 @@ namespace livestreamer_gui
                             break;
 
                         case ConfigValue.Type.AutocompleteList:
+                            List<AutocompleteData> alst = (List<AutocompleteData>)it.Value.boxedValue;
+
+                            if (alst.Count == 0)
+                                break;
+
                             xmlw.StartTag("autocomplete",
                                 new Dictionary<string, string>{
                                     { "name", it.Key }
                                 });
-                            List<AutocompleteData> alst = (List<AutocompleteData>)it.Value.boxedValue;
 
                             foreach (var jt in alst)
                                 xmlw.WriteTag("entry", jt.url,
