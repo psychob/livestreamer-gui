@@ -11,44 +11,44 @@ using System.Threading.Tasks;
 
 namespace livestreamer_gui
 {
-    public struct StreamInfo
-    {
-        public string Title;
-        public string Author;
-        public string CanonicalUrl;
-        public string OptionsPassedToLivestreamer;
-    }
+	public struct StreamInfo
+	{
+		public string Title;
+		public string Author;
+		public string CanonicalUrl;
+		public string OptionsPassedToLivestreamer;
+	}
 
-    public struct InitData
-    {
-        public static class Event
-        {
-            public delegate void RunLiveStreamer();
-            public delegate void TabUpdated(string id);
-        }
+	public struct InitData
+	{
+		public static class Event
+		{
+			public delegate void RunLiveStreamer();
+			public delegate void TabUpdated(string id);
+		}
 
-        public ConfigurationDatabaseProxy Config;
-        public System.Windows.Forms.TabControl Control;
-        public Event.RunLiveStreamer RunLiveStreamer;
-        public Event.TabUpdated TabUpdated;
-    }
+		public ConfigurationDatabaseProxy Config;
+		public System.Windows.Forms.TabControl Control;
+		public Event.RunLiveStreamer RunLiveStreamer;
+		public Event.TabUpdated TabUpdated;
+	}
 
-    interface PluginAPI
-    {
-        bool Owns(Uri url);
+	interface PluginAPI
+	{
+		bool Owns(Uri url);
 
-        string GetCanonicalUrl();
+		string GetCanonicalUrl();
 
-        string[] GetCanonicalQuality();
+		string[] GetCanonicalQuality();
 
-        StreamInfo GetVideoMedatada();
+		StreamInfo GetVideoMedatada();
 
-        string GetPluginId();
+		string GetPluginId();
 
-        void InitTab(InitData data);
+		void InitTab(InitData data);
 
-        void StreamStarted();
+		void StreamStarted();
 
-        void ShutDown();
-    }
+		void ShutDown();
+	}
 }
